@@ -23,9 +23,9 @@ export default function CustomizeLayout() {
 
   return (
     <div>
-      <div className="flex min-h-screen items-start justify-center bg-white py-4">
+      <div className="flex min-h-screen items-start justify-center py-4">
         <div id="phone-root" ref={containerRef}
-          className="relative flex h-[700px] w-[340px] flex-col overflow-hidden border border-secondary-200">
+          className="relative flex h-[700px] w-[340px] flex-col overflow-hidden border border-secondary-200 bg-white">
           {/* 헤더 */}
           <div className="flex justify-between items-center p-2">
             <ChevronLeft size={24} className="s text-gray-500"
