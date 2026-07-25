@@ -13,7 +13,7 @@ export default function NavButton({
     <button
       onClick={onClick}
       className={`
-        px-4 py-2 text-sm transition-colors
+        px-4 py-2 text-xl transition-colors
         rounded-full
         ${isSelected
           ? "bg-sky-100 text-blue-600"

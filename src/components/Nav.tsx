@@ -2,8 +2,8 @@ import NavButton from "./NavButton";
 
 export default function Nav() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-white max-w-360 mx-auto">
-      <div className="w-full flex items-center py-3 px-8">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-25 bg-white max-w-360 mx-auto">
+      <div className="w-full h-full flex items-center py-3 px-20 overflow-x-scroll">
         {/* 왼쪽 */}
         <div className="flex-1">
           <span>로고</span>
