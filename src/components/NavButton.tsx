@@ -1,28 +1,28 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 interface NavButtonProps {
   label: string;
   path: string;
-  isSelected?: boolean;
 }
 
 export default function NavButton({
   label,
   path,
-  isSelected = false,
 }: NavButtonProps) {
   return (
-    <Link
+    <NavLink
       to={path}
-      className={`
-        px-4 py-2 text-xl transition-colors rounded-full
-        ${isSelected
+      className={({ isActive }) =>
+        `
+        px-4 py-2 text-xl rounded-full transition-colors
+        ${isActive
           ? "bg-sky-100 text-blue-600"
-          : "bg-transparent text-black"
+          : "text-black"
         }
-      `}
+        `
+      }
     >
       {label}
-    </Link>
+    </NavLink>
   );
 }

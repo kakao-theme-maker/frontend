@@ -7,16 +7,21 @@ import ThemePreview from "@/pages/theme/ThemePreview";
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
 import CustomizeMain from "@/pages/theme/customize/CustomizeMain";
+import Community from "@/pages/Community";
+import MyPage from "@/pages/MyPage";
+import Manage from "@/pages/theme/Manage";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/mypage" element={<MyPage />} />
 
         <Route path="/themes" element={<ThemeList />} />
+        <Route path="/themes/manage" element={<Manage />} />
         <Route path="/themes/:id/preview" element={<ThemePreview />} />
-
         <Route path="/themes/:id/customize" element={<CustomizeLayout />}>
           <Route index element={<CustomizeMain />} />
           <Route path="chat" element={<CustomizeChat />} />

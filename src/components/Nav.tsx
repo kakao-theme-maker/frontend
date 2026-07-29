@@ -11,7 +11,7 @@ export default function Nav() {
 
         {/* 가운데 */}
         <div className="flex items-center gap-6">
-          <NavButton label="홈화면" path="/" isSelected />
+          <NavButton label="홈화면" path="/" />
           <NavButton label="커뮤니티" path="/community" />
           <NavButton label="테마만들기" path="/themes/123/customize" />
           <NavButton label="테마관리" path="/themes/manage" />
