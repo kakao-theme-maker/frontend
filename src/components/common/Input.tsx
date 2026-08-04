@@ -6,7 +6,7 @@ export default function Input({
 }: InputProps) {
   return (
     <input
-      className={`w-full px-4 py-2 border rounded-xl outline-none ${className}`}
+      className={`w-full px-4 py-2 outline-none ${className}`}
       {...props}
     />
   );
