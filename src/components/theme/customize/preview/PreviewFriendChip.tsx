@@ -58,7 +58,7 @@ export default function PreviewFriendChip({
           <PreviewButton label="선물하기" size="md" />
         </div>
       )}
-      //TODO::선택 배경 색과 오퍼시티 가져오기
+      {/* //TODO::선택 배경 색과 오퍼시티 가져오기 */}
       {/* <div className="absolute -inset-x-2 inset-y-0"
         style={{
           backgroundColor: isSelected ? primary.selectedBackgroundColor : "transparent",
