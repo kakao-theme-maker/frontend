@@ -8,41 +8,46 @@ export default function ThemeBasicSettings() {
   const setCommon = useThemeStore((state) => state.setCommon);
 
   return (
-    <div className="bg-white rounded-xl p-4">
-      <h2>테마 기본 설정</h2>
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+    <div className="rounded-xl bg-white p-4">
+      <h2 className="mb-4 text-lg font-semibold">테마 기본 설정</h2>
+
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <span>테마 이름</span>
+          <span className="mb-1.5 block text-sm text-[#5B6C9B]">테마 이름</span>
           <Input
             type="text"
-            className="bg-[#E4EBFE] border border-dashed border-[#aab6d8]"
+            className="border border-dashed border-[#aab6d8] bg-[#E4EBFE]"
           />
         </div>
         <div>
-          <span>제작자</span>
+          <span className="mb-1.5 block text-sm text-[#5B6C9B]">제작자</span>
           <Input
             type="text"
-            className="bg-[#E4EBFE] border border-dashed border-[#aab6d8]"
+            className="border border-dashed border-[#aab6d8] bg-[#E4EBFE]"
           />
         </div>
       </div>
 
-      <div>
-        <span>테마 이미지</span>
-        <label
-          className="w-100 h-24 border block rounded-xl cursor-pointer
-            bg-[#E4EBFE] border-dashed border-[#aab6d8] items-center justify-center"
-        >
-          <ImageUpload />
-        </label>
+      <div className="mt-6 flex flex-col gap-4">
+        <div>
+          <span className="mb-1.5 block text-sm text-[#5B6C9B]">테마 이미지</span>
+          <ImageUpload
+            value={common.mainBGImage}
+            onChange={(url) => setCommon({ mainBGImage: url })}
+            onRemove={() => setCommon({ mainBGImage: "" })}
+            alt="테마 배경 이미지"
+          />
+        </div>
 
-        <span>기본 프로필</span>
-        <label
-          className="w-100 h-24 border block rounded-xl cursor-pointer
-            bg-[#E4EBFE] border-dashed border-[#aab6d8] items-center justify-center"
-        >
-          <ImageUpload />
-        </label>
+        <div>
+          <span className="mb-1.5 block text-sm text-[#5B6C9B]">기본 프로필</span>
+          <ImageUpload
+            value={common.profileImage01}
+            onChange={(url) => setCommon({ profileImage01: url })}
+            onRemove={() => setCommon({ profileImage01: "" })}
+            alt="기본 프로필 이미지"
+          />
+        </div>
 
         <div className="flex gap-4">
           <ColorChip

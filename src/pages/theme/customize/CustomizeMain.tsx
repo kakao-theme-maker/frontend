@@ -22,13 +22,11 @@ export default function CustomizeMain() {
         <ThemeBasicSettings />
 
         {/* 테마 커스텀 */}
-        <div className="bg-white rounded-xl p-4">
-          <h2>테마 커스텀</h2>
-
-          <div className="flex gap-8 mt-4">
+        <div className="flex gap-8 mt-4">
+          <div className="w-[320px] shrink-0">
             <ThemePreview activeTab={activeTab} />
-            <CustomizeTabs activeTab={activeTab} onChangeTab={setActiveTab} />
           </div>
+          <CustomizeTabs activeTab={activeTab} onChangeTab={setActiveTab} />
         </div>
       </div>
     </div>

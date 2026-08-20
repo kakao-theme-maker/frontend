@@ -1,4 +1,5 @@
 import ColorChip from "@/components/common/ColorChip";
+import ImageUpload from "@/components/common/ImageUpload";
 import { useThemeStore } from "@/store/customizeStore";
 
 export default function ChatEditor() {
@@ -15,7 +16,15 @@ export default function ChatEditor() {
       {/* 배경 */}
       <div>
         <h3 className="text-sm font-semibold mb-2">배경</h3>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap items-start gap-4">
+          <div>
+            <span className="mb-1.5 block text-sm text-[#5B6C9B]">배경 이미지</span>
+            <ImageUpload
+              value={chat.bgImage}
+              onChange={(url) => setChat({ bgImage: url })}
+              alt="채팅방 배경 이미지"
+            />
+          </div>
           <ColorChip
             label="채팅방 배경색"
             hex={chat.bgColor}

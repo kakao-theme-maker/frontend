@@ -1,7 +1,6 @@
 import ChatScreenPreview from "./screen/ChatScreenPreview";
 import ChatListScreenPreview from "./screen/ChatListScreenPreview";
 import FriendsScreenPreview from "./screen/FriendsScreenPreview";
-import HeaderScreenPreview from "./screen/HeaderScreenPreview";
 import LayoutScreenPreview from "./screen/LayoutScreenPreview";
 import PasscodeScreenPreview from "./screen/PasscodeScreenPreview";
 import NotificationScreenPreview from "./screen/NotificationScreenPreview";
@@ -12,10 +11,10 @@ const SCREEN_MAP: Record<TabKey, React.ComponentType> = {
   chat: ChatScreenPreview,
   chatList: ChatListScreenPreview,
   friends: FriendsScreenPreview,
-  header: HeaderScreenPreview,
   layout: LayoutScreenPreview,
   passcode: PasscodeScreenPreview,
   notification: NotificationScreenPreview,
+  bubble: ChatScreenPreview
 };
 
 interface ThemePreviewProps {
