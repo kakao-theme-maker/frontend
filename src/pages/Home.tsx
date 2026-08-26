@@ -48,7 +48,7 @@ export default function Home() {
           <h2 className="py-6 sm:py-8 text-xl sm:text-2xl lg:text-3xl font-bold">내가 최근에 만든 디자인</h2>
           <span className="py-6 sm:py-8 text-sm sm:text-base lg:text-3xl font-bold text-primary shrink-0">전체보기</span>
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
           {RECENT_THEMES.map((id) => (
             <ThemeCard key={id} />
           ))}
