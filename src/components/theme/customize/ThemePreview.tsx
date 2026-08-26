@@ -11,7 +11,7 @@ export default function ThemePreview({ activeTab }: ThemePreviewProps) {
   return (
     <div className="flex justify-center">
       <div
-        className="relative w-[min(90vw,330px)] aspect-[390/700] origin-top
+        className="relative w-[min(90vw,330px)] aspect-390/700 origin-top
         rounded-3xl border border-gray-300
           text-xs overflow-hidden mx-auto"
       >

@@ -29,7 +29,7 @@ export default function PreviewFrame({ Screen }: PreviewFrameProps) {
   }, []);
 
   return (
-    <div className="relative w-full aspect-[390/700] rounded-xl overflow-hidden mx-auto border border-gray-300">
+    <div className="relative w-full aspect-390/700 rounded-xl overflow-hidden mx-auto border border-gray-300">
       {/* 측정 전용 레이어: 실제 콘텐츠 표시 영역의 순수 폭만 잰다 */}
       <div ref={measureRef} className="absolute inset-0" />
 
