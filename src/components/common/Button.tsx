@@ -11,9 +11,9 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`rounded-md px-5 py-2 border border-rose-500 text-rose-500 
-    transition-colors hover:bg-rose-500 hover:text-white 
-    focus-visible:ring-2 focus-visible:ring-rose-500 
+      className={`rounded-md px-5 py-2 border border-primary bg-primary text-white 
+    transition-colors hover:bg-blue-800  hover:border-blue-800 
+    focus-visible:ring-2 focus-visible:ring-primary 
     disabled:opacity-50 disabled:pointer-events-none
     ${className}`}
       {...props}
