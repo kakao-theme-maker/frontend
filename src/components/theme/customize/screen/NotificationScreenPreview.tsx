@@ -7,7 +7,7 @@ export default function NotificationScreenPreview() {
   const notification = useThemeStore((state) => state.theme.notification);
 
   return (
-    <div className="absolute inset-1">
+    <div className="absolute inset-0">
       <ChatListScreenPreview />
       <div className="absolute inset-0 bg-black/50 rounded-2xl" />
 

@@ -14,9 +14,9 @@ export default function NavButton({
       to={path}
       className={({ isActive }) =>
         `
-        px-4 py-2 text-xl rounded-full transition-colors
+        shrink-0 whitespace-nowrap px-4 py-2 text-xl rounded-full transition-colors
         ${isActive
-          ? "bg-sky-100 text-blue-600"
+          ? "bg-sky-100 text-primary"
           : "text-black"
         }
         `

@@ -1,125 +1,39 @@
-// // components/BottomSheet.tsx
-// // import { motion, type PanInfo } from 'framer-motion';
-// // import { useEffect, useState } from 'react';
-// // import CustomCategoryTab from '../custom/CustomCategoryTab';
-// // import type { ICategoryTab, ISettingSection } from '@/types/custom/types';
-// // import TabsIcon from "@/components/icons/custom/tab.svg?react";
-// // import SettingSection from './SettingSection';
-// // import { backgroundItems, friendsSections, headerItems, } from '@/config/setting-options';
-// // import ColorSetting from './ColorSetting';
+import type { ReactNode } from "react";
 
-// const CONTAINER_HEIGHT = 700;
-// const SNAP_HEIGHTS = [0.2, 0.5, 0.9].map((r) => r * CONTAINER_HEIGHT); // [140, 350, 630]
+interface BottomSheetProps {
+  open: boolean;
+  onClose: () => void;
+  title?: string;
+  children: ReactNode;
+}
 
-// const tabs: CategoryTab[] = [
-//   { id: "passcode", icon: <TabsIcon />, label: "잠금화면", href: "/custom/passcode" },
-//   { id: "friends", icon: <TabsIcon />, label: "친구", href: "/custom/friends" },
-//   { id: "header", icon: <TabsIcon />, label: "헤더", href: "/custom/header" },
-//   { id: "tabBar", icon: <TabsIcon />, label: "탭", href: "/custom/tab-bar" },
-//   { id: "chatRoomList", icon: <TabsIcon />, label: "채팅 목록", href: "/custom/chat-room-list" },
-//   { id: "chatRoom", icon: <TabsIcon />, label: "채팅", href: "/custom/chat-room" },
-//   { id: "notice", icon: <TabsIcon />, label: "알림", href: "/custom/notice" },
-// ];
+export default function BottomSheet({ open, onClose, title, children }: BottomSheetProps) {
+  return (
+    <div
+      className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"}`}
+      aria-hidden={!open}
+    >
+      {/* 배경 딤 */}
+      <div
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"
+          }`}
+      />
 
-// interface BottomSheetProps {
-//   sections?: ISettingSection[];
-//   onHeightChange?: (height: number) => void;
-// }
+      {/* 시트 */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-white
+          transition-transform duration-300 ease-out
+          ${open ? "translate-y-0" : "translate-y-full"}`}
+      >
+        <div className="flex justify-center py-3">
+          <div className="h-1.5 w-12 rounded-full bg-gray-300" />
+        </div>
 
-// export function BottomSheet({ sections = [], onHeightChange }: BottomSheetProps) {
-//   const [index, setIndex] = useState(0);
-//   const [dragHeight, setDragHeight] = useState<number | null>(null);
+        {title && <h2 className="px-4 pb-3 text-lg font-semibold">{title}</h2>}
 
-//   const baseHeight = SNAP_HEIGHTS[index];
-//   const currentHeight = dragHeight ?? baseHeight;
-
-//   useEffect(() => {
-//     onHeightChange?.(currentHeight);
-//   }, [currentHeight, onHeightChange]);
-
-//   const onDrag = (_: unknown, info: PanInfo) => {
-//     const newHeight = baseHeight - info.offset.y;
-//     const clamped = Math.min(
-//       Math.max(newHeight, SNAP_HEIGHTS[0]),
-//       SNAP_HEIGHTS[SNAP_HEIGHTS.length - 1]
-//     );
-//     setDragHeight(clamped);
-//   };
-
-//   const onDragEnd = (_: unknown, info: PanInfo) => {
-//     const releasedHeight = baseHeight - info.offset.y;
-
-//     // 가장 가까운 스냅 지점 찾기
-//     let closest = 0;
-//     let minDiff = Infinity;
-//     SNAP_HEIGHTS.forEach((h, i) => {
-//       const diff = Math.abs(h - releasedHeight);
-//       if (diff < minDiff) {
-//         minDiff = diff;
-//         closest = i;
-//       }
-//     });
-
-//     setIndex(closest);
-//     setDragHeight(null);
-//   };
-
-//   return (
-//     <motion.div
-//       className="absolute bottom-0 left-0 right-0 bg-gray-500 rounded-t-2xl overflow-hidden"
-//       animate={{ height: currentHeight }}
-//       transition={
-//         dragHeight !== null
-//           ? { duration: 0 }
-//           : { type: 'spring', damping: 30, stiffness: 300 }
-//       }
-//     >
-//       <motion.div
-//         drag="y"
-//         dragConstraints={{ top: 0, bottom: 0 }}
-//         dragElastic={0}
-//         dragMomentum={false}
-//         onDrag={onDrag}
-//         onDragEnd={onDragEnd}
-//         className="flex justify-center py-3 cursor-grab active:cursor-grabbing"
-//       >
-//         <div className="h-1.5 w-12 rounded-full bg-gray-300" />
-//       </motion.div>
-
-//       <div className="p-4">
-//         {index === 0 ? (
-//           <div className="flex overflow-x-auto bottom-0 w-full">
-//             {tabs.map((tab) => (
-//               <CustomCategoryTab
-//                 key={tab.id}
-//                 icon={tab.icon}
-//                 label={tab.label}
-//                 href={tab.href}
-//               />
-//             ))}
-//           </div>
-//         ) : (
-//           // <div className='flex flex-col gap-3'>
-//           //   <SettingSection title="배경" items={backgroundItems} hasTabToggle />
-//           //   <SettingSection title="헤더" items={headerItems} />
-//           // </div>
-//           // <div>
-//           //   <ColorSetting />
-//           // </div>
-//           <div>
-//             <div className="flex flex-col gap-3">
-//               {sections.map((section) => (
-//                 <SettingSection
-//                   key={section.title}
-//                   title={section.title}
-//                   items={section.items}
-//                   hasTabToggle={section.hasTabToggle}
-//                 />
-//               ))}
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </motion.div>
-//   );
-// }
+        <div className="px-4 pb-8">{children}</div>
+      </div>
+    </div>
+  );
+}

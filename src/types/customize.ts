@@ -12,3 +12,12 @@ export interface SettingSection {
   hasTabToggle?: boolean;
   items: SettingItem[];
 }
+
+export type TabKey =
+  | 'passcode'
+  | 'bubble'
+  | 'layout'
+  | 'friends'
+  | 'chatList'
+  | 'chat'
+  | 'notification';

@@ -1,34 +1,19 @@
-import ChatScreenPreview from "./screen/ChatScreenPreview";
-import ChatListScreenPreview from "./screen/ChatListScreenPreview";
-import FriendsScreenPreview from "./screen/FriendsScreenPreview";
-import LayoutScreenPreview from "./screen/LayoutScreenPreview";
-import PasscodeScreenPreview from "./screen/PasscodeScreenPreview";
-import NotificationScreenPreview from "./screen/NotificationScreenPreview";
-
-import type { TabKey } from "./CustomizeTabs";
-
-const SCREEN_MAP: Record<TabKey, React.ComponentType> = {
-  chat: ChatScreenPreview,
-  chatList: ChatListScreenPreview,
-  friends: FriendsScreenPreview,
-  layout: LayoutScreenPreview,
-  passcode: PasscodeScreenPreview,
-  notification: NotificationScreenPreview,
-  bubble: ChatScreenPreview
-};
+import type { TabKey } from "@/types/customize";
+import { SCREEN_MAP } from "@/config/customizeTabs";
 
 interface ThemePreviewProps {
   activeTab: TabKey;
 }
 
 export default function ThemePreview({ activeTab }: ThemePreviewProps) {
-  const ActiveScreen = SCREEN_MAP[activeTab] ?? ChatScreenPreview;
+  const ActiveScreen = SCREEN_MAP[activeTab];
 
   return (
     <div className="flex justify-center">
       <div
-        className="relative w-[330px] aspect-[390/700] origin-top
-          border border-gray-300 rounded-2xl p-1 text-xs overflow-hidden mx-auto"
+        className="relative w-[min(90vw,330px)] aspect-[390/700] origin-top
+        rounded-3xl border border-gray-300
+          text-xs overflow-hidden mx-auto"
       >
         <ActiveScreen />
       </div>

@@ -1,3 +1,4 @@
+// src/components/theme/customize/screen/PasscodeScreenPreview.tsx
 import { useThemeStore } from "@/store/customizeStore";
 import PreviewBullet from "../preview/PreviewBullet";
 import PreviewKeypadNumber from "../preview/PreviewKeypadNumber";
@@ -15,7 +16,8 @@ export default function PasscodeScreenPreview() {
         className="flex-1 w-full flex flex-col items-center justify-center gap-2"
         style={{
           backgroundImage: `url(${passcode.bgImage})`,
-          backgroundSize: "100% auto",
+          backgroundSize: "cover",       // "100% auto" → "cover": 박스를 항상 꽉 채움
+          backgroundRepeat: "no-repeat", // 반복(tile) 방지
           backgroundPosition: "center",
           color: common.mainTextColor,
         }}
