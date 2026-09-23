@@ -10,7 +10,7 @@ import Community from "@/pages/community/Community";
 import MyPage from "@/pages/MyPage";
 import Manage from "@/pages/theme/Manage";
 import Write from "@/pages/community/Write";
-import ThemePreview from "@/components/theme/customize/ThemePreview";
+// import ThemePreview from "@/components/theme/customize/ThemePreview";
 
 export default function AppRoutes() {
   return (
