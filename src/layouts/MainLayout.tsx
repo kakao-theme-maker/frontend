@@ -1,7 +1,7 @@
 // src/layouts/MainLayout.tsx
 import { Outlet } from "react-router-dom";
 import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 
 // Nav와 Footer가 포함된 공통 레이아웃 컴포넌트
 export default function MainLayout() {
