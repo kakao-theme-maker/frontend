@@ -1,3 +1,4 @@
+// src/types/theme.ts
 export interface SimpleThemeConfig {
   common: {
     icon: string;

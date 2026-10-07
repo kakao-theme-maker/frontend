@@ -1,9 +1,9 @@
-// stores/themeStore.ts
+// src/store/customizeStore.ts
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SimpleThemeConfig } from '@/types/theme'
+import type { ColorEntry } from '@/config/themeStyleMap'
 
-// 기본 이미지 에셋 
 import defaultIcon from '@/assets/images/commonIcoTheme.png'
 import defaultMainBGImage from '@/assets/images/mainBgImage.png'
 import defaultProfileImage01 from '@/assets/images/profileImg01.png'
@@ -34,7 +34,6 @@ import defaultCodeImage03Selected from '@/assets/images/passcodeImgCode03Selecte
 import defaultCodeImage04Selected from '@/assets/images/passcodeImgCode04Selected.png'
 import defaultKeypadPressed from '@/assets/images/passcodeKeypadPressed.png'
 
-// 섹션별 기본값
 const DEFAULT_COMMON: SimpleThemeConfig['common'] = {
   icon: defaultIcon,
   mainTextColor: '#664242',
@@ -108,6 +107,9 @@ const DEFAULT_NOTIFICATION: SimpleThemeConfig['notification'] = {
 
 export interface ThemeStore {
   theme: SimpleThemeConfig
+  themeName: string
+
+  setThemeName: (name: string) => void
 
   setCommon: (style: Partial<SimpleThemeConfig['common']>) => void
   setTabBar: (style: Partial<SimpleThemeConfig['tabBar']>) => void
@@ -116,6 +118,9 @@ export interface ThemeStore {
   setBubble: (style: Partial<SimpleThemeConfig['bubble']>) => void
   setPasscode: (style: Partial<SimpleThemeConfig['passcode']>) => void
   setNotification: (style: Partial<SimpleThemeConfig['notification']>) => void
+
+  // 서버에서 불러온 테마 이름과 색상을 반영
+  applyServerTheme: (name: string, colors: ColorEntry[]) => void
 
   resetAll: () => void
 }
@@ -130,47 +135,55 @@ const DEFAULT_THEME: SimpleThemeConfig = {
   notification: DEFAULT_NOTIFICATION,
 }
 
+// 테마의 한 섹션만 부분 갱신하는 상태 업데이터 생성
+const updateSection =
+  <K extends keyof SimpleThemeConfig>(section: K, style: Partial<SimpleThemeConfig[K]>) =>
+    (state: ThemeStore) => ({
+      theme: { ...state.theme, [section]: { ...state.theme[section], ...style } },
+    })
+
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
       theme: { ...DEFAULT_THEME },
+      themeName: '',
 
-      setCommon: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, common: { ...state.theme.common, ...style } },
-        })),
+      // 테마 이름 변경
+      setThemeName: (name) => set({ themeName: name }),
 
-      setTabBar: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, tabBar: { ...state.theme.tabBar, ...style } },
-        })),
+      // 공통 스타일 부분 갱신
+      setCommon: (style) => set(updateSection('common', style)),
 
-      setChat: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, chat: { ...state.theme.chat, ...style } },
-        })),
+      // 탭바 스타일 부분 갱신
+      setTabBar: (style) => set(updateSection('tabBar', style)),
 
-      setInput: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, input: { ...state.theme.input, ...style } },
-        })),
+      // 채팅방 스타일 부분 갱신
+      setChat: (style) => set(updateSection('chat', style)),
 
-      setBubble: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, bubble: { ...state.theme.bubble, ...style } },
-        })),
+      // 입력창 스타일 부분 갱신
+      setInput: (style) => set(updateSection('input', style)),
 
-      setPasscode: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, passcode: { ...state.theme.passcode, ...style } },
-        })),
+      // 말풍선 스타일 부분 갱신
+      setBubble: (style) => set(updateSection('bubble', style)),
 
-      setNotification: (style) =>
-        set((state) => ({
-          theme: { ...state.theme, notification: { ...state.theme.notification, ...style } },
-        })),
+      // 잠금화면 스타일 부분 갱신
+      setPasscode: (style) => set(updateSection('passcode', style)),
 
-      resetAll: () => set({ theme: { ...DEFAULT_THEME } }),
+      // 알림 스타일 부분 갱신
+      setNotification: (style) => set(updateSection('notification', style)),
+
+      // 테마 전체를 기본값으로 초기화
+      // 서버에서 불러온 테마 이름과 색상을 반영
+      applyServerTheme: (name, colors) =>
+        set((state) => {
+          const theme = structuredClone(state.theme) as unknown as Record<string, Record<string, string>>
+          for (const { section, key, color } of colors) {
+            if (theme[section]) theme[section][key] = color
+          }
+          return { theme: theme as unknown as SimpleThemeConfig, themeName: name }
+        }),
+
+      resetAll: () => set({ theme: { ...DEFAULT_THEME }, themeName: '' }),
     }),
     {
       name: 'theme-store',

@@ -1,27 +1,26 @@
 // src/pages/community/Write.tsx
 import { useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
-import Input from "@/components/common/Input";
-import Button from "@/components/common/Button";
-
-import defaultThemeImage from "@/assets/images/mainBgImage.png";
+import { useNavigate } from "react-router-dom";
 import defaultIcon from "@/assets/images/commonIcoTheme.png";
-import type { PostInfoValues } from "@/components/form/ThemePostForm";
+import Button from "@/components/common/Button";
+import Card from "@/components/common/Card";
+import PageContainer from "@/components/common/PageContainer";
+import PageTitle from "@/components/common/PageTitle";
+import Pagination from "@/components/common/Pagination";
+import QueryStatus from "@/components/common/QueryStatus";
+import SearchField from "@/components/common/SearchField";
+import SectionTitle from "@/components/common/SectionTitle";
+import SelectMenu from "@/components/common/SelectMenu";
+import ThemeGrid from "@/components/common/ThemeGrid";
 import ThemeSelectCard from "@/components/community/ThemeSelectedCard";
+import type { PostInfoValues } from "@/components/form/ThemePostForm";
 import ThemePostForm from "@/components/form/ThemePostForm";
+import { POST_TYPES, THEME_SORT_OPTIONS } from "@/config/community";
+import { useCreateThemeBoard } from "@/hooks/useThemeBoards";
+import { useMyThemes } from "@/hooks/useThemes";
+import { formatDate } from "@/utils/format";
 
-const POST_TYPES = ["테마", "프로필 및 기본배경", "채팅방", "잠금화면"] as const;
-const SORT_OPTIONS = ["최신순", "인기순"] as const;
-
-const MOCK_THEMES = [
-  { id: 0, title: "졸업기니테마", date: "2026.08.01", image: defaultIcon },
-  { id: 1, title: "어피치테마", date: "2025.09.01", image: defaultThemeImage },
-  { id: 2, title: "어피치테마", date: "2025.09.01", image: defaultThemeImage },
-  { id: 3, title: "어피치테마", date: "2025.09.01", image: defaultThemeImage },
-  { id: 4, title: "어피치테마", date: "2025.09.01", image: defaultThemeImage },
-];
-
-const TOTAL_PAGES = 4;
+const PAGE_SIZE = 5;
 
 const INITIAL_POST_INFO: PostInfoValues = {
   themeName: "",
@@ -30,154 +29,126 @@ const INITIAL_POST_INFO: PostInfoValues = {
   content: "",
 };
 
+// 커뮤니티 글쓰기 페이지
 export default function Write() {
-  const [postType, setPostType] = useState<(typeof POST_TYPES)[number]>("테마");
-  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
-
-  const [sort, setSort] = useState<(typeof SORT_OPTIONS)[number]>("최신순");
-  const [sortMenuOpen, setSortMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
+  const [postType, setPostType] = useState(POST_TYPES[0]);
+  const [sort, setSort] = useState<(typeof THEME_SORT_OPTIONS)[number]>(THEME_SORT_OPTIONS[0]);
   const [keyword, setKeyword] = useState("");
   const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
-
   const [postInfo, setPostInfo] = useState<PostInfoValues>(INITIAL_POST_INFO);
 
+  const myThemes = useMyThemes();
+  const createBoard = useCreateThemeBoard();
+
+  const isThemePost = postType === POST_TYPES[0];
+  const matchedThemes = (myThemes.data ?? []).filter((theme) =>
+    theme.themeName.includes(keyword.trim()),
+  );
+  const sortedThemes = sort === THEME_SORT_OPTIONS[0] ? matchedThemes : [...matchedThemes].reverse();
+  const totalPages = Math.max(1, Math.ceil(sortedThemes.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageThemes = sortedThemes.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const canSubmit =
+    isThemePost &&
+    selectedThemeId !== null &&
+    postInfo.title.trim() !== "" &&
+    !createBoard.isPending;
+
+  // 검색어를 바꾸고 첫 페이지로 이동
+  const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(e.target.value);
+    setPage(1);
+  };
+
+  // 선택한 테마와 게시글 정보로 글 올리기 요청
+  const handleSubmit = () => {
+    if (selectedThemeId === null) return;
+    createBoard.mutate(
+      {
+        title: postInfo.title.trim(),
+        content: postInfo.content.trim(),
+        themeComponentId: selectedThemeId,
+      },
+      // 작성한 게시글 상세 페이지로 이동
+      { onSuccess: (post) => navigate(`/community/${post.post_id}`) },
+    );
+  };
+
   return (
-    <div className="py-6 px-4 sm:py-8 sm:px-6 lg:px-20">
+    <PageContainer>
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold sm:text-3xl">글쓰기</h1>
-
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setTypeMenuOpen((prev) => !prev)}
-            className="flex items-center gap-1.5 rounded-full border border-primary px-4 py-1.5 text-sm font-medium text-primary sm:text-base"
-          >
-            {postType}
-            <ChevronDown size={16} />
-          </button>
-
-          {typeMenuOpen && (
-            <div className="absolute left-0 top-full z-10 mt-2 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
-              {POST_TYPES.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => {
-                    setPostType(type);
-                    setTypeMenuOpen(false);
-                  }}
-                  className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <PageTitle>글쓰기</PageTitle>
+        <SelectMenu value={postType} options={POST_TYPES} onChange={setPostType} />
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-6 sm:p-8">
-        <h2 className="text-base font-bold sm:text-lg">테마 선택</h2>
+      <Card className="mt-6">
+        <SectionTitle size="md">테마 선택</SectionTitle>
 
         <div className="mt-4 flex items-center gap-3">
-          <div className="flex flex-1 items-center rounded-full border border-slate-300 px-4">
-            <Search size={18} className="pointer-events-none text-slate-400" />
-            <Input
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              placeholder="테마 검색"
-              className="flex-1 border-none px-2"
-            />
-          </div>
-
-          <div className="relative shrink-0">
-            <button
-              type="button"
-              onClick={() => setSortMenuOpen((prev) => !prev)}
-              className="flex items-center gap-1.5 rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-600"
-            >
-              {sort}
-              <ChevronDown size={16} />
-            </button>
-
-            {sortMenuOpen && (
-              <div className="absolute right-0 top-full z-10 mt-2 w-32 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
-                {SORT_OPTIONS.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => {
-                      setSort(option);
-                      setSortMenuOpen(false);
-                    }}
-                    className="block w-full px-4 py-2 text-left text-sm hover:bg-slate-50"
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <SearchField
+            value={keyword}
+            onChange={handleKeywordChange}
+            placeholder="테마 검색"
+            className="flex-1"
+          />
+          <SelectMenu
+            value={sort}
+            options={THEME_SORT_OPTIONS}
+            onChange={(option) => {
+              setSort(option);
+              setPage(1);
+            }}
+            variant="neutral"
+            menuClassName="right-0 w-32"
+            className="shrink-0"
+          />
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-4">
-          {MOCK_THEMES.map((theme) => (
+        <QueryStatus
+          isLoading={myThemes.isLoading}
+          isError={myThemes.isError}
+          isEmpty={pageThemes.length === 0}
+          emptyMessage="불러올 테마가 없어요."
+        />
+        <ThemeGrid columns="select" className="mt-6">
+          {pageThemes.map((theme) => (
             <ThemeSelectCard
-              key={theme.id}
-              title={theme.title}
-              date={theme.date}
-              image={theme.image}
-              selected={selectedThemeId === theme.id}
-              onSelect={() => setSelectedThemeId(theme.id)}
+              key={theme.themeComponentId}
+              title={theme.themeName}
+              date={formatDate(theme.createdAt)}
+              image={theme.previewImageUrl || defaultIcon}
+              selected={selectedThemeId === theme.themeComponentId}
+              onSelect={() => setSelectedThemeId(theme.themeComponentId)}
             />
           ))}
+        </ThemeGrid>
+
+        <div className="mt-6">
+          <Pagination page={currentPage} totalPages={totalPages} onChange={setPage} />
         </div>
-
-        <div className="mt-6 flex items-center justify-center gap-3 text-sm text-slate-400">
-          <button
-            type="button"
-            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            disabled={page === 1}
-            className="disabled:opacity-40"
-          >
-            <ChevronLeft size={16} />
-          </button>
-
-          {Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1).map((num) => (
-            <button
-              key={num}
-              type="button"
-              onClick={() => setPage(num)}
-              className={
-                num === page
-                  ? "font-semibold text-primary underline underline-offset-4"
-                  : "hover:text-slate-600"
-              }
-            >
-              {num}
-            </button>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => setPage((prev) => Math.min(TOTAL_PAGES, prev + 1))}
-            disabled={page === TOTAL_PAGES}
-            className="disabled:opacity-40"
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      </div>
+      </Card>
 
       <div className="mt-6">
         <ThemePostForm values={postInfo} onChange={setPostInfo} />
       </div>
 
       <div className="mt-6 flex justify-end">
-        <Button className="rounded-lg px-6 py-2.5">글 올리기</Button>
+        <Button size="lg" rounded="lg" onClick={handleSubmit} disabled={!canSubmit}>
+          {createBoard.isPending ? "올리는 중..." : "글 올리기"}
+        </Button>
       </div>
-    </div>
+      {!isThemePost && (
+        <p className="mt-3 text-right text-sm text-slate-400">
+          이 유형의 글쓰기는 아직 지원하지 않아요.
+        </p>
+      )}
+      {createBoard.isError && (
+        <p className="mt-3 text-right text-sm text-danger">
+          글 올리기에 실패했어요. 다시 시도해 주세요.
+        </p>
+      )}
+    </PageContainer>
   );
 }

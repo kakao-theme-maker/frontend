@@ -1,15 +1,14 @@
-// LayoutScreenPreview.tsx
+// src/components/theme/customize/screen/LayoutScreenPreview.tsx
 import PreviewNav from "../preview/PreviewNav";
-import ChatListScreenPreview from "./ChatListScreenPreview";
+import DimmedChatListScreen from "./DimmedChatListScreen";
 
+// 하단 탭바를 강조한 화면 프리뷰 컴포넌트
 export default function LayoutScreenPreview() {
   return (
-    <div className="absolute inset-0">
-      <ChatListScreenPreview />
-      <div className="absolute inset-0 bg-black/50 rounded-2xl" />
+    <DimmedChatListScreen>
       <div className="absolute bottom-0 w-full">
         <PreviewNav selectedTab="friends" />
       </div>
-    </div>
+    </DimmedChatListScreen>
   );
 }

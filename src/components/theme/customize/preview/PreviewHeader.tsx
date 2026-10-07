@@ -1,6 +1,8 @@
+// src/components/theme/customize/preview/PreviewHeader.tsx
 import { useThemeStore } from "@/store/customizeStore"
 import { MessageCirclePlusIcon, Search, Settings } from 'lucide-react'
 
+// 헤더 프리뷰 컴포넌트
 export default function PreviewHeader() {
 
   const common = useThemeStore(

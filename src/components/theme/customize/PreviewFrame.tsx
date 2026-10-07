@@ -8,6 +8,7 @@ interface PreviewFrameProps {
   Screen: ComponentType;
 }
 
+// 390x700 기준 화면을 컨테이너 폭에 맞춰 스케일링하는 프레임
 export default function PreviewFrame({ Screen }: PreviewFrameProps) {
   const measureRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
@@ -16,8 +17,8 @@ export default function PreviewFrame({ Screen }: PreviewFrameProps) {
     const el = measureRef.current;
     if (!el) return;
 
+    // 컨테이너 폭 기준으로 스케일 값 갱신
     const updateScale = () => {
-      // border 영향 없는 순수 콘텐츠 폭 기준으로 스케일 계산
       setScale(el.clientWidth / BASE_WIDTH);
     };
 
@@ -29,8 +30,7 @@ export default function PreviewFrame({ Screen }: PreviewFrameProps) {
   }, []);
 
   return (
-    <div className="relative w-full aspect-390/700 rounded-xl overflow-hidden mx-auto border border-gray-300">
-      {/* 측정 전용 레이어: 실제 콘텐츠 표시 영역의 순수 폭만 잰다 */}
+    <div className="relative w-full aspect-390/700 rounded-xl overflow-hidden mx-auto border border-slate-300">
       <div ref={measureRef} className="absolute inset-0" />
 
       {scale > 0 && (

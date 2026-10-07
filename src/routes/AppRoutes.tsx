@@ -1,3 +1,4 @@
+// src/routes/AppRoutes.tsx
 import Home from "@/pages/Home";
 import CustomizeChat from "@/pages/theme/customize/CustomizeChat";
 import CustomizeLayout from "@/pages/theme/customize/CustomizeLayout";
@@ -10,25 +11,32 @@ import Community from "@/pages/community/Community";
 import MyPage from "@/pages/MyPage";
 import Manage from "@/pages/theme/Manage";
 import Write from "@/pages/community/Write";
-// import ThemePreview from "@/components/theme/customize/ThemePreview";
+import Detail from "@/pages/community/Detail";
+import Login from "@/pages/Login";
+import RequireAuth from "@/components/auth/RequireAuth";
 
+// 앱 전체 라우트 정의 (RequireAuth 아래 라우트는 로그인 필요)
 export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
-
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/login" element={<Login />} />
 
         <Route path="/community" element={<Community />} />
-        <Route path="/community/write" element={<Write />} />
+        <Route path="/community/:postId" element={<Detail />} />
 
-        <Route path="/themes" element={<ThemeList />} />
-        <Route path="/themes/manage" element={<Manage />} />
-        {/* <Route path="/themes/:id/preview" element={<ThemePreview />} /> */}
-        <Route path="/themes/:id/customize" element={<CustomizeLayout />}>
-          <Route index element={<CustomizeMain />} />
-          <Route path="chat" element={<CustomizeChat />} />
+        <Route element={<RequireAuth />}>
+          <Route path="/mypage" element={<MyPage />} />
+
+          <Route path="/community/write" element={<Write />} />
+
+          <Route path="/themes" element={<ThemeList />} />
+          <Route path="/themes/manage" element={<Manage />} />
+          <Route path="/themes/:id/customize" element={<CustomizeLayout />}>
+            <Route index element={<CustomizeMain />} />
+            <Route path="chat" element={<CustomizeChat />} />
+          </Route>
         </Route>
       </Route>
 

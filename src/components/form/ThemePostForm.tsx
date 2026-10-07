@@ -1,5 +1,9 @@
-// src/components/community/ThemePostForm.tsx
+// src/components/form/ThemePostForm.tsx
+import Card from "@/components/common/Card";
 import Input from "@/components/common/Input";
+import SectionTitle from "@/components/common/SectionTitle";
+import Textarea from "@/components/common/Textarea";
+import FormField from "@/components/form/FormField";
 
 export interface PostInfoValues {
   themeName: string;
@@ -13,7 +17,9 @@ interface ThemePostFormProps {
   onChange: (values: PostInfoValues) => void;
 }
 
+// 게시글 정보(테마명, 작성자, 제목, 내용) 입력 폼
 export default function ThemePostForm({ values, onChange }: ThemePostFormProps) {
+  // 필드별 입력값 변경 핸들러 생성
   const handleField =
     (field: keyof PostInfoValues) =>
       (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -21,55 +27,26 @@ export default function ThemePostForm({ values, onChange }: ThemePostFormProps) 
       };
 
   return (
-    <div className="rounded-3xl bg-white p-6 sm:p-8">
-      <h2 className="text-base font-bold sm:text-lg">게시글 정보</h2>
+    <Card>
+      <SectionTitle size="md">게시글 정보</SectionTitle>
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label className="text-sm font-semibold text-slate-800">
-            테마 이름
-          </label>
-          <Input
-            value={values.themeName}
-            onChange={handleField("themeName")}
-            className="mt-2 rounded-lg border border-slate-200 bg-slate-50"
-          />
-        </div>
+        <FormField label="테마 이름">
+          <Input variant="outline" value={values.themeName} onChange={handleField("themeName")} />
+        </FormField>
 
-        <div>
-          <label className="text-sm font-semibold text-slate-800">
-            제작자
-          </label>
-          <Input
-            value={values.author}
-            onChange={handleField("author")}
-            className="mt-2 rounded-lg border border-slate-200 bg-slate-50"
-          />
-        </div>
+        <FormField label="제작자">
+          <Input variant="outline" value={values.author} onChange={handleField("author")} />
+        </FormField>
       </div>
 
-      <div className="mt-4">
-        <label className="text-sm font-semibold text-slate-800">
-          게시글 제목
-        </label>
-        <Input
-          value={values.title}
-          onChange={handleField("title")}
-          className="mt-2 rounded-lg border border-slate-200 bg-slate-50"
-        />
-      </div>
+      <FormField label="게시글 제목" className="mt-4">
+        <Input variant="outline" value={values.title} onChange={handleField("title")} />
+      </FormField>
 
-      <div className="mt-4">
-        <label className="text-sm font-semibold text-slate-800">
-          본문쓰기
-        </label>
-        <textarea
-          value={values.content}
-          onChange={handleField("content")}
-          rows={5}
-          className="mt-2 w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 outline-none"
-        />
-      </div>
-    </div>
+      <FormField label="본문쓰기" className="mt-4">
+        <Textarea rows={5} value={values.content} onChange={handleField("content")} />
+      </FormField>
+    </Card>
   );
 }

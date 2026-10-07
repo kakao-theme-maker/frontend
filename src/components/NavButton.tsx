@@ -1,3 +1,4 @@
+// src/components/NavButton.tsx
 import { NavLink } from "react-router-dom";
 
 interface NavButtonProps {
@@ -5,6 +6,7 @@ interface NavButtonProps {
   path: string;
 }
 
+// 활성 경로 스타일이 적용되는 네비게이션 링크 버튼
 export default function NavButton({
   label,
   path,
@@ -18,7 +20,7 @@ export default function NavButton({
         text-sm sm:text-base font-medium
         transition-colors
         ${isActive
-          ? "bg-sky-100 text-primary"
+          ? "bg-primary-soft text-primary"
           : "text-black"
         }
         `

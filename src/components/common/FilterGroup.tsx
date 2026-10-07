@@ -1,4 +1,4 @@
-// components/common/FilterGroup.tsx
+// src/components/common/FilterGroup.tsx
 import FilterChip from "./FilterChip";
 
 interface FilterGroupProps {
@@ -8,6 +8,7 @@ interface FilterGroupProps {
   onSelect?: (item: string) => void;
 }
 
+// 제목과 필터 칩 목록을 묶은 그룹 컴포넌트
 export default function FilterGroup({
   title,
   items,

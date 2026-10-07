@@ -1,3 +1,4 @@
+// src/config/customizeTabs.ts
 import type { TabKey } from "@/types/customize";
 
 import BubbleEditor from "@/components/theme/customize/editor/BubbleEditor";
@@ -25,7 +26,6 @@ export const TABS: { key: TabKey; label: string }[] = [
   { key: "notification", label: "알림" },
 ];
 
-// 탭 -> 에디터 매핑. 데스크탑 인라인 렌더링과 모바일 바텀시트에서 공용으로 사용.
 export const EDITOR_MAP: Record<TabKey, React.ComponentType> = {
   passcode: PasscodeEditor,
   bubble: BubbleEditor,
@@ -36,7 +36,6 @@ export const EDITOR_MAP: Record<TabKey, React.ComponentType> = {
   notification: NotificationEditor,
 };
 
-// 탭 -> 프리뷰 화면 매핑
 export const SCREEN_MAP: Record<TabKey, React.ComponentType> = {
   passcode: PasscodeScreenPreview,
   bubble: ChatScreenPreview,

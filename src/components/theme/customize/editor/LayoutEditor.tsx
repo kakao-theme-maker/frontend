@@ -1,6 +1,7 @@
+// src/components/theme/customize/editor/LayoutEditor.tsx
 import TabIconGrid from "../tab/TabIconGrid";
 
-// LayoutEditor.tsx
+// 탭 아이콘 레이아웃 에디터 컴포넌트
 export default function LayoutEditor() {
   return (
     <div className="">

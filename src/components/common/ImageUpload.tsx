@@ -1,13 +1,16 @@
-import { Upload, X } from "lucide-react";
+// src/components/common/ImageUpload.tsx
+import { Loader2, Upload, X } from "lucide-react";
+import useImageUpload from "@/hooks/useImageUpload";
 
 interface ImageUploadProps {
   value?: string | null;
   onChange: (url: string) => void;
   onRemove?: () => void;
   alt?: string;
-  size?: number; // px. 생략 시 기본(최대 100px) 크기
+  size?: number;
 }
 
+// 이미지 업로드 및 미리보기 컴포넌트
 export default function ImageUpload({
   value,
   onChange,
@@ -16,14 +19,21 @@ export default function ImageUpload({
   size,
 }: ImageUploadProps) {
   const compact = size !== undefined && size <= 72;
+  const upload = useImageUpload();
 
+  // 선택한 파일을 서버에 업로드하고, 받은 이미지 URL을 전달
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      onChange(URL.createObjectURL(file));
-    }
+    e.target.value = "";
+    if (!file) return;
+
+    upload.mutate(file, {
+      onSuccess: (component) => onChange(component.image_url),
+      onError: () => window.alert("이미지 업로드에 실패했어요. 다시 시도해 주세요."),
+    });
   };
 
+  // 업로드한 이미지 제거 처리
   const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -34,9 +44,9 @@ export default function ImageUpload({
     <label
       className={`
         group relative block cursor-pointer overflow-hidden rounded-2xl
-        border border-dashed border-[#aab6d8]
-        bg-[#E4EBFE] transition-colors
-        hover:border-[#8398c9] hover:bg-[#DCE4FD]
+        border border-dashed border-field-border
+        bg-primary-soft transition-colors
+        hover:border-field-border-hover hover:bg-primary-soft-hover
         ${size ? "" : "aspect-square w-full max-w-[100px]"}
       `}
       style={size ? { width: size, height: size } : undefined}
@@ -45,6 +55,7 @@ export default function ImageUpload({
         type="file"
         accept="image/*"
         onChange={handleChange}
+        disabled={upload.isPending}
         className="hidden"
       />
 
@@ -67,14 +78,20 @@ export default function ImageUpload({
           </button>
         </>
       ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 px-4 text-center text-[#5B6C9B]">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 px-4 text-center text-field-label">
           <Upload className={compact ? "h-4 w-4" : "h-6 w-6 transition-transform group-hover:scale-110"} />
           {!compact && (
             <>
               <span className="text-sm font-medium">이미지 업로드</span>
-              <span className="text-xs text-[#8494bf]">.png, .jpg, .jpeg 형식 가능</span>
+              <span className="text-xs text-field-hint">.png, .jpg, .jpeg 형식 가능</span>
             </>
           )}
+        </div>
+      )}
+
+      {upload.isPending && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" aria-label="업로드 중" />
         </div>
       )}
     </label>

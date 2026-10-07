@@ -1,10 +1,12 @@
 // src/components/theme/customize/screen/PasscodeScreenPreview.tsx
+import { CODE_IMAGE_COLUMNS } from "@/config/themeAssets";
 import { useThemeStore } from "@/store/customizeStore";
 import PreviewBullet from "../preview/PreviewBullet";
 import PreviewKeypadNumber from "../preview/PreviewKeypadNumber";
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
 
+// 잠금화면 프리뷰 컴포넌트
 export default function PasscodeScreenPreview() {
   const common = useThemeStore((state) => state.theme.common);
   const passcode = useThemeStore((state) => state.theme.passcode);
@@ -16,8 +18,8 @@ export default function PasscodeScreenPreview() {
         className="flex-1 w-full flex flex-col items-center justify-center gap-2"
         style={{
           backgroundImage: `url(${passcode.bgImage})`,
-          backgroundSize: "cover",       // "100% auto" → "cover": 박스를 항상 꽉 채움
-          backgroundRepeat: "no-repeat", // 반복(tile) 방지
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           color: common.mainTextColor,
         }}
@@ -25,10 +27,14 @@ export default function PasscodeScreenPreview() {
         <p className="text-xl">비밀번호</p>
         <p className="font-thin">카카오톡 암호를 입력해주세요.</p>
         <section className="grid grid-cols-4 gap-2 mt-4">
-          <PreviewBullet filled emptyImage={passcode.codeImage01} filledImage={passcode.codeImage01Selected} />
-          <PreviewBullet filled emptyImage={passcode.codeImage02} filledImage={passcode.codeImage02Selected} />
-          <PreviewBullet emptyImage={passcode.codeImage03} filledImage={passcode.codeImage03Selected} />
-          <PreviewBullet emptyImage={passcode.codeImage04} filledImage={passcode.codeImage04Selected} />
+          {CODE_IMAGE_COLUMNS.map((column, index) => (
+            <PreviewBullet
+              key={column.key}
+              filled={index < 2}
+              emptyImage={passcode[column.key]}
+              filledImage={passcode[column.selectedKey]}
+            />
+          ))}
         </section>
       </div>
       <div className="flex w-full h-54 items-center justify-center p-4 rounded-b-2xl" style={{ backgroundColor: passcode.keypadBGColor }}>

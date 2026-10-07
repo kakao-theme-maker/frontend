@@ -1,58 +1,22 @@
-import ImageUpload from "@/components/common/ImageUpload";
+// src/components/theme/customize/tab/TabIconGrid.tsx
+import Card from "@/components/common/Card";
+import { TAB_ICON_COLUMNS } from "@/config/themeAssets";
 import { useThemeStore } from "@/store/customizeStore";
+import StateImageGrid from "../editor/StateImageGrid";
 
-const TABS = [
-  { key: "friends", selectedKey: "friendsSelected", label: "친구탭" },
-  { key: "chats", selectedKey: "chatsSelected", label: "채팅탭" },
-  { key: "now", selectedKey: "nowSelected", label: "지금탭" },
-  { key: "shopping", selectedKey: "shoppingSelected", label: "쇼핑탭" },
-  { key: "more", selectedKey: "moreSelected", label: "더보기탭" },
-] as const;
-
+// 탭별 일반/선택 아이콘 이미지 설정 그리드 컴포넌트
 export default function TabIconGrid() {
   const tabBar = useThemeStore((state) => state.theme.tabBar);
   const setTabBar = useThemeStore((state) => state.setTabBar);
 
   return (
-    <div className="rounded-xl bg-white p-4">
-      <div className="grid grid-cols-[56px_repeat(5,48px)] items-center gap-x-3 gap-y-3">
-        {/* 헤더 */}
-        <div />
-        {TABS.map((tab) => (
-          <span
-            key={tab.key}
-            className="text-center text-xs font-medium text-slate-600"
-          >
-            {tab.label}
-          </span>
-        ))}
-
-        {/* 안눌림 */}
-        <span>안눌림</span>
-        {TABS.map((tab) => (
-          <ImageUpload
-            size={48}
-            value={tabBar[tab.key]}
-            onChange={(url) => setTabBar({ [tab.key]: url })}
-            onRemove={() => setTabBar({ [tab.key]: "" })}
-            alt={`${tab.label} 기본 아이콘`}
-          />
-        ))}
-
-        {/* 눌림 */}
-        <span>눌림</span>
-        {TABS.map((tab) => (
-          <ImageUpload
-            key={tab.selectedKey}
-            size={48}
-
-            value={tabBar[tab.selectedKey]}
-            onChange={(url) => setTabBar({ [tab.selectedKey]: url })}
-            onRemove={() => setTabBar({ [tab.selectedKey]: "" })}
-            alt={`${tab.label} 선택 아이콘`}
-          />
-        ))}
-      </div>
-    </div>
+    <Card size="sm">
+      <StateImageGrid
+        columns={TAB_ICON_COLUMNS}
+        values={tabBar}
+        onChange={(key, url) => setTabBar({ [key]: url })}
+        getAlt={(label, selected) => `${label} ${selected ? "선택" : "기본"} 아이콘`}
+      />
+    </Card>
   );
 }

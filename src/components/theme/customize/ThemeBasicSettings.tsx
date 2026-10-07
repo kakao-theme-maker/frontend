@@ -1,53 +1,54 @@
+// src/components/theme/customize/ThemeBasicSettings.tsx
+import Card from "@/components/common/Card";
 import ColorChip from "@/components/common/ColorChip";
 import ImageUpload from "@/components/common/ImageUpload";
 import Input from "@/components/common/Input";
 import { useThemeStore } from "@/store/customizeStore";
+import EditorField from "./editor/EditorField";
 
+// 테마 기본 설정 패널 컴포넌트
 export default function ThemeBasicSettings() {
   const common = useThemeStore((state) => state.theme.common);
   const setCommon = useThemeStore((state) => state.setCommon);
+  const themeName = useThemeStore((state) => state.themeName);
+  const setThemeName = useThemeStore((state) => state.setThemeName);
 
   return (
-    <div className="rounded-xl bg-white p-4">
-      <h2 className="mb-4 text-lg font-semibold">테마 기본 설정</h2>
+    <Card size="sm">
+      <h2 className="mb-4 text-base font-semibold">테마 기본 설정</h2>
 
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <span className="mb-1.5 block text-sm text-[#5B6C9B]">테마 이름</span>
+        <EditorField label="테마 이름">
           <Input
             type="text"
-            className="border border-dashed border-[#aab6d8] bg-[#E4EBFE]"
+            variant="dashed"
+            value={themeName ?? ""}
+            onChange={(e) => setThemeName(e.target.value)}
           />
-        </div>
-        <div>
-          <span className="mb-1.5 block text-sm text-[#5B6C9B]">제작자</span>
-          <Input
-            type="text"
-            className="border border-dashed border-[#aab6d8] bg-[#E4EBFE]"
-          />
-        </div>
+        </EditorField>
+        <EditorField label="제작자">
+          <Input type="text" variant="dashed" />
+        </EditorField>
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        <div>
-          <span className="mb-1.5 block text-sm text-[#5B6C9B]">테마 이미지</span>
+        <EditorField label="테마 이미지">
           <ImageUpload
             value={common.mainBGImage}
             onChange={(url) => setCommon({ mainBGImage: url })}
             onRemove={() => setCommon({ mainBGImage: "" })}
             alt="테마 배경 이미지"
           />
-        </div>
+        </EditorField>
 
-        <div>
-          <span className="mb-1.5 block text-sm text-[#5B6C9B]">기본 프로필</span>
+        <EditorField label="기본 프로필">
           <ImageUpload
             value={common.profileImage01}
             onChange={(url) => setCommon({ profileImage01: url })}
             onRemove={() => setCommon({ profileImage01: "" })}
             alt="기본 프로필 이미지"
           />
-        </div>
+        </EditorField>
 
         <div className="flex gap-4">
           <ColorChip
@@ -67,6 +68,6 @@ export default function ThemeBasicSettings() {
           />
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

@@ -1,61 +1,56 @@
-// src/pages/Community.tsx
+// src/pages/community/Community.tsx
 "use client";
 
 import { useState } from "react";
 import FilterGroup from "@/components/common/FilterGroup";
-import Input from "@/components/common/Input";
-// import Button from "@/components/common/Button";
-import { Search, Plus } from "lucide-react";
+import Button from "@/components/common/Button";
+import { Plus } from "lucide-react";
 import CommunityThemeCard from "@/components/community/CommunityThemeCard";
 import { Link } from "react-router-dom";
+import PageContainer from "@/components/common/PageContainer";
+import PageTitle from "@/components/common/PageTitle";
+import SearchField from "@/components/common/SearchField";
+import ThemeGrid from "@/components/common/ThemeGrid";
+import QueryStatus from "@/components/common/QueryStatus";
+import { COMMUNITY_FILTERS, SORT_OPTIONS, SORT_PARAMS } from "@/config/community";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
+import { useThemeBoardList } from "@/hooks/useThemeBoards";
 
-const FILTERS = [
-  { title: "테마", items: ["테마"] },
-  { title: "프로필 및 기본배경", items: ["기본 프로필", "메인 배경"] },
-  { title: "채팅방", items: ["채팅창 배경", "말풍선"] },
-  { title: "잠금화면", items: ["잠금 배경", "잠금 불릿", "잠금 프레스"] },
-];
-
-const SORT_OPTIONS = ["최신순", "인기순"] as const;
-
-const MOCK_THEMES = Array.from({ length: 18 }, (_, i) => ({
-  id: i,
-  title: "어피치 테마",
-  likeCount: 192,
-  bookmarkCount: 192,
-}));
-
+// 커뮤니티 목록 페이지
 export default function Community() {
   const [activeItem, setActiveItem] = useState<string | null>("테마");
   const [activeSort, setActiveSort] =
     useState<(typeof SORT_OPTIONS)[number]>("최신순");
+  const [keyword, setKeyword] = useState("");
+  const debouncedKeyword = useDebouncedValue(keyword.trim());
+  const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useThemeBoardList(debouncedKeyword, SORT_PARAMS[activeSort]);
+  const boards = data?.pages.flat() ?? [];
 
+  // 필터 항목 선택/해제 토글
   const handleSelect = (item: string) => {
     setActiveItem((prev) => (prev === item ? null : item));
   };
 
   return (
-    <div className="py-6 px-4 sm:py-8 sm:px-6 lg:px-20">
+    <PageContainer>
       <header className="pt-6 pb-8 text-center sm:pt-10 sm:pb-10">
-        <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+        <PageTitle>
           원하는 테마와 에셋을 둘러보세요
-        </h1>
+        </PageTitle>
         <p className="pt-3 text-sm text-slate-400 sm:text-base">
           다른 사람들이 공유한 테마와 에셋을 둘러보고 내 카카오톡에 바로 적용하세요
         </p>
       </header>
 
-      <div className="flex w-full items-center rounded-full border border-slate-300 px-4">
-        <Input
-          type="search"
-          placeholder="원하는 키워드를 검색하세요"
-          className="flex-1 border-none px-0"
-        />
-        <Search size={20} className="pointer-events-none text-primary" />
-      </div>
+      <SearchField
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
+        placeholder="원하는 키워드를 검색하세요"
+      />
 
       <div className="w-full divide-y divide-slate-200 border-y border-slate-200 mt-8">
-        {FILTERS.map((filter) => (
+        {COMMUNITY_FILTERS.map((filter) => (
           <FilterGroup
             key={filter.title}
             title={filter.title}
@@ -90,25 +85,37 @@ export default function Community() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 lg:grid-cols-6">
-        {MOCK_THEMES.map((theme) => (
-          <CommunityThemeCard
-            key={theme.id}
-            title={theme.title}
-            likeCount={theme.likeCount}
-            bookmarkCount={theme.bookmarkCount}
-          />
+      <QueryStatus
+        isLoading={isLoading}
+        isError={isError}
+        isEmpty={boards.length === 0}
+        emptyMessage="게시글이 없어요."
+      />
+      <ThemeGrid>
+        {boards.map((board) => (
+          <Link key={board.post_id} to={`/community/${board.post_id}`} className="block min-w-0">
+            <CommunityThemeCard
+              title={board.title}
+              likeCount={board.prefers}
+              image={board.preview_image_url || undefined}
+            />
+          </Link>
         ))}
-      </div>
+      </ThemeGrid>
 
-      <div className="flex justify-center pt-8">
-        <button
-          type="button"
-          className="rounded-full border border-primary px-6 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-sky-50 sm:text-base"
-        >
-          더 불러오기
-        </button>
-      </div>
-    </div>
+      {hasNextPage && (
+        <div className="flex justify-center pt-8">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+          >
+            {isFetchingNextPage ? "불러오는 중..." : "더 불러오기"}
+          </Button>
+        </div>
+      )}
+    </PageContainer>
   );
 }

@@ -1,15 +1,14 @@
-// HeaderScreenPreview.tsx
+// src/components/theme/customize/screen/HeaderScreenPreview.tsx
 import PreviewHeader from "../preview/PreviewHeader";
-import ChatListScreenPreview from "./ChatListScreenPreview";
+import DimmedChatListScreen from "./DimmedChatListScreen";
 
+// 헤더를 강조한 화면 프리뷰 컴포넌트
 export default function HeaderScreenPreview() {
   return (
-    <div className="absolute inset-1">
-      <ChatListScreenPreview />
-      <div className="absolute inset-0 bg-black/50 rounded-2xl" />
+    <DimmedChatListScreen className="absolute inset-1">
       <div className="absolute top-0 w-full">
         <PreviewHeader />
       </div>
-    </div>
+    </DimmedChatListScreen>
   );
 }

@@ -1,9 +1,12 @@
+// src/components/mypage/ProfileSummary.tsx
+import Avatar from "@/components/common/Avatar";
 import type { UserProfile } from "@/types/user";
 
 interface ProfileSummaryProps {
   user: UserProfile;
 }
 
+// 프로필 요약(이름, 소개, 게시물/팔로워/팔로잉) 컴포넌트
 export default function ProfileSummary({ user }: ProfileSummaryProps) {
   const stats = [
     { label: "게시물", value: user.postCount },
@@ -14,32 +17,21 @@ export default function ProfileSummary({ user }: ProfileSummaryProps) {
   return (
     <>
       <div className="flex flex-col items-start gap-4">
-        {user.profileImage ? (
-          <img
-            src={user.profileImage}
-            alt={`${user.name} 프로필 이미지`}
-            className="h-24 w-24 rounded-full object-cover sm:h-32 sm:w-32 lg:h-36 lg:w-36"
-          />
-        ) : (
-          <div
-            aria-hidden="true"
-            className="h-24 w-24 rounded-full bg-slate-300 sm:h-32 sm:w-32 lg:h-36 lg:w-36"
-          />
-        )}
+        <Avatar src={user.profileImage} alt={`${user.name} 프로필 이미지`} size="xl" />
 
         <div>
-          <h2 className="text-xl font-bold text-slate-600 sm:text-2xl lg:text-3xl">{user.name}</h2>
-          <p className="text-base text-slate-600 sm:text-lg lg:text-2xl">@{user.handle}</p>
+          <h2 className="text-lg font-bold text-slate-600 sm:text-xl lg:text-2xl">{user.name}</h2>
+          <p className="text-sm text-slate-600 sm:text-base">@{user.handle}</p>
         </div>
 
-        {user.bio && <p className="break-words text-base lg:text-xl">{user.bio}</p>}
+        {user.bio && <p className="break-words text-sm sm:text-base">{user.bio}</p>}
       </div>
 
       <dl className="mt-8 flex justify-center gap-8 sm:gap-12">
         {stats.map(({ label, value }) => (
           <div key={label} className="flex flex-col-reverse items-center gap-1">
-            <dt className="text-sm sm:text-base lg:text-2xl">{label}</dt>
-            <dd className="text-xl font-bold sm:text-2xl lg:text-3xl">
+            <dt className="text-sm">{label}</dt>
+            <dd className="text-lg font-bold sm:text-xl">
               {value.toLocaleString("ko-KR")}
             </dd>
           </div>

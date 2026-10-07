@@ -1,14 +1,17 @@
 // src/components/community/CommunityThemeCard.tsx
 import { Heart, Bookmark } from "lucide-react";
 import defaultThemeImage from "@/assets/images/mainBgImage.png";
+import IconStat from "@/components/common/IconStat";
+import ThemeCardBase from "@/components/common/ThemeCardBase";
 
 interface CommunityThemeCardProps {
   title: string;
   likeCount: number;
-  bookmarkCount: number;
+  bookmarkCount?: number;
   image?: string;
 }
 
+// 커뮤니티 테마 카드 컴포넌트 (제목, 좋아요/북마크 수)
 export default function CommunityThemeCard({
   title,
   likeCount,
@@ -16,29 +19,11 @@ export default function CommunityThemeCard({
   image = defaultThemeImage,
 }: CommunityThemeCardProps) {
   return (
-    <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-300 bg-white">
-      <img
-        src={image}
-        alt=""
-        className="aspect-square w-full object-cover"
-      />
-
-      <div className="flex flex-col p-3 sm:p-3.5">
-        <span className="truncate text-base font-bold sm:text-lg">
-          {title}
-        </span>
-
-        <div className="flex items-center gap-3 pt-1 text-xs text-slate-400 sm:text-sm">
-          <span className="flex items-center gap-1">
-            <Heart size={14} />
-            {likeCount}
-          </span>
-          <span className="flex items-center gap-1">
-            <Bookmark size={14} />
-            {bookmarkCount}
-          </span>
-        </div>
+    <ThemeCardBase image={image} title={title}>
+      <div className="flex items-center gap-3 pt-1 text-xs text-slate-400 sm:text-sm">
+        <IconStat icon={Heart}>{likeCount}</IconStat>
+        {bookmarkCount !== undefined && <IconStat icon={Bookmark}>{bookmarkCount}</IconStat>}
       </div>
-    </div>
+    </ThemeCardBase>
   );
 }

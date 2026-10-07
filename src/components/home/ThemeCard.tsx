@@ -1,23 +1,20 @@
+// src/components/home/ThemeCard.tsx
 import defaultIcon from "@/assets/images/commonIcoTheme.png";
+import type { Theme } from "@/api/types";
+import ThemeCardBase from "@/components/common/ThemeCardBase";
+import { formatDate } from "@/utils/format";
 
-export default function ThemeCard() {
+interface ThemeCardProps {
+  theme: Theme;
+}
+
+// 홈 화면 테마 카드 컴포넌트
+export default function ThemeCard({ theme }: ThemeCardProps) {
   return (
-    <div className="w-full min-w-0 overflow-hidden rounded-2xl border border-slate-300 bg-white">
-      <img
-        src={defaultIcon}
-        alt=""
-        className="aspect-square w-full object-cover"
-      />
-
-      <div className="flex flex-col p-3 sm:p-3.5">
-        <span className="truncate text-base font-bold sm:text-lg">
-          어피치 테마
-        </span>
-
-        <span className="text-xs text-slate-400 sm:text-sm">
-          2026.07.16
-        </span>
-      </div>
-    </div>
+    <ThemeCardBase
+      image={theme.previewImageUrl || defaultIcon}
+      title={theme.themeName}
+      subtitle={formatDate(theme.createdAt)}
+    />
   );
 }

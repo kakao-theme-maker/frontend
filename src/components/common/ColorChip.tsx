@@ -1,3 +1,4 @@
+// src/components/common/ColorChip.tsx
 import { useState } from "react";
 import { HexColorInput, HexColorPicker, } from "react-colorful";
 
@@ -7,6 +8,7 @@ type ColorChipProps = {
   onChange: (color: string) => void;
 };
 
+// 색상 칩을 눌러 컬러 피커를 여는 컴포넌트
 export default function ColorChip({
   label,
   hex,

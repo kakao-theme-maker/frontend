@@ -1,11 +1,14 @@
-// src/components/community/ThemePostPreviewProps.tsx
+// src/components/community/ThemePostPreview.tsx
+import Card from "@/components/common/Card";
+
 interface ThemePostPreviewProps {
   images: string[];
 }
 
+// 게시글 미리보기 이미지 그리드 컴포넌트
 export default function ThemePostPreview({ images }: ThemePostPreviewProps) {
   return (
-    <div className="grid grid-cols-2 gap-4 rounded-3xl bg-white p-6 sm:grid-cols-4 sm:p-8">
+    <Card className="grid grid-cols-2 gap-4 sm:grid-cols-4">
       {images.map((image, index) => (
         <div
           key={index}
@@ -18,6 +21,6 @@ export default function ThemePostPreview({ images }: ThemePostPreviewProps) {
           />
         </div>
       ))}
-    </div>
+    </Card>
   );
 }

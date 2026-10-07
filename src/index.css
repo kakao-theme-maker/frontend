@@ -1,9 +1,28 @@
+/* src/index.css */
 @import "tailwindcss";
 
 @theme {
   --color-primary: #0352FF;
+  --color-primary-dark: #1E40AF;
+  --color-primary-soft: #E4EBFE;
+  --color-primary-soft-hover: #DCE4FD;
+
+  --color-heading: #2F3453;
+  --color-muted: #8A93B3;
+  --color-danger: #FF5B5B;
+  --color-field-border: #aab6d8;
+  --color-field-border-hover: #8398c9;
+  --color-field-label: #5B6C9B;
+  --color-field-hint: #8494bf;
 
   --color-app-bg: #F8F9FC;
   --color-brand-dark: #111737;
   --color-brand-dark-2: #1B2355;
+}
+
+@layer base {
+  :where(button, a, [role="button"]):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }

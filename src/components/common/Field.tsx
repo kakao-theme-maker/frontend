@@ -1,3 +1,4 @@
+// src/components/common/Field.tsx
 import { useId, type InputHTMLAttributes } from "react";
 import Input from "@/components/common/Input";
 
@@ -6,6 +7,7 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
+// 라벨과 에러 메시지가 붙은 입력 필드 컴포넌트
 export default function Field({ label, error, className = "", ...props }: FieldProps) {
   const id = useId();
   const errorId = `${id}-error`;
@@ -14,7 +16,7 @@ export default function Field({ label, error, className = "", ...props }: FieldP
     <div>
       <label
         htmlFor={id}
-        className="mb-2 block text-base font-bold text-[#2F3453] sm:text-lg lg:text-xl"
+        className="mb-2 block text-sm font-bold text-heading sm:text-base"
       >
         {label}
       </label>
@@ -23,13 +25,13 @@ export default function Field({ label, error, className = "", ...props }: FieldP
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`h-12 rounded-[10px] bg-app-bg sm:h-14 lg:h-15 lg:text-lg ${error ? "ring-2 ring-[#FF5B5B]" : "focus-visible:ring-2 focus-visible:ring-primary/40"
+        className={`h-11 rounded-[10px] bg-app-bg text-sm sm:h-12 sm:text-base ${error ? "ring-2 ring-danger" : "focus-visible:ring-2 focus-visible:ring-primary/40"
           } ${className}`}
         {...props}
       />
 
       {error && (
-        <p id={errorId} role="alert" className="mt-2 text-sm text-[#FF5B5B]">
+        <p id={errorId} role="alert" className="mt-2 text-sm text-danger">
           {error}
         </p>
       )}

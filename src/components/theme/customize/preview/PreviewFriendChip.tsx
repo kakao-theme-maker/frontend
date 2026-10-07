@@ -1,6 +1,5 @@
-
+// src/components/theme/customize/preview/PreviewFriendChip.tsx
 import { useThemeStore } from "@/store/customizeStore";
-// import PreviewBullet from "./PreviewBullet";
 import PreviewButton from "./PreviewButton";
 
 interface FriendChipProps {
@@ -10,11 +9,11 @@ interface FriendChipProps {
   isSelected?: boolean;
 }
 
+// 친구 칩 프리뷰 컴포넌트
 export default function PreviewFriendChip({
   label,
   variant = "full",
   description,
-  // isSelected = false,
 }: FriendChipProps) {
   const theme = useThemeStore(
     (state) => state.theme
@@ -58,12 +57,6 @@ export default function PreviewFriendChip({
           <PreviewButton label="선물하기" size="md" />
         </div>
       )}
-      {/* //TODO::선택 배경 색과 오퍼시티 가져오기 */}
-      {/* <div className="absolute -inset-x-2 inset-y-0"
-        style={{
-          backgroundColor: isSelected ? primary.selectedBackgroundColor : "transparent",
-          opacity: isSelected ? primary.selectedBackgroundAlpha : 0,
-        }} /> */}
     </div>
 
   );

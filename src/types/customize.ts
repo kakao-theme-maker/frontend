@@ -1,3 +1,4 @@
+// src/types/customize.ts
 export type SettingItemType = 'color' | 'size' | 'image';
 
 export interface SettingItem {

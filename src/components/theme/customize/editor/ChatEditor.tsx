@@ -1,7 +1,12 @@
+// src/components/theme/customize/editor/ChatEditor.tsx
 import ColorChip from "@/components/common/ColorChip";
 import ImageUpload from "@/components/common/ImageUpload";
 import { useThemeStore } from "@/store/customizeStore";
+import EditorField from "./EditorField";
+import EditorSection from "./EditorSection";
+import FieldRow from "./FieldRow";
 
+// 채팅방(배경, 말풍선, 입력창) 설정 에디터 컴포넌트
 export default function ChatEditor() {
   const chat = useThemeStore((state) => state.theme.chat);
   const bubble = useThemeStore((state) => state.theme.bubble);
@@ -13,30 +18,25 @@ export default function ChatEditor() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 배경 */}
-      <div>
-        <h3 className="text-sm font-semibold mb-2">배경</h3>
-        <div className="flex flex-wrap items-start gap-4">
-          <div>
-            <span className="mb-1.5 block text-sm text-[#5B6C9B]">배경 이미지</span>
+      <EditorSection title="배경">
+        <FieldRow>
+          <EditorField label="배경 이미지">
             <ImageUpload
               value={chat.bgImage}
               onChange={(url) => setChat({ bgImage: url })}
               alt="채팅방 배경 이미지"
             />
-          </div>
+          </EditorField>
           <ColorChip
             label="채팅방 배경색"
             hex={chat.bgColor}
             onChange={(color) => setChat({ bgColor: color })}
           />
-        </div>
-      </div>
+        </FieldRow>
+      </EditorSection>
 
-      {/* 말풍선 */}
-      <div>
-        <h3 className="text-sm font-semibold mb-2">말풍선</h3>
-        <div className="flex gap-4">
+      <EditorSection title="말풍선">
+        <FieldRow>
           <ColorChip
             label="받는 텍스트"
             hex={bubble.receiveTextColor}
@@ -52,13 +52,11 @@ export default function ChatEditor() {
             hex={bubble.unreadCountColor}
             onChange={(color) => setBubble({ unreadCountColor: color })}
           />
-        </div>
-      </div>
+        </FieldRow>
+      </EditorSection>
 
-      {/* 입력창 */}
-      <div>
-        <h3 className="text-sm font-semibold mb-2">입력창</h3>
-        <div className="flex gap-4 flex-wrap">
+      <EditorSection title="입력창">
+        <FieldRow>
           <ColorChip
             label="입력창 배경"
             hex={input.bgColor}
@@ -89,8 +87,8 @@ export default function ChatEditor() {
             hex={input.sendFGColor}
             onChange={(color) => setInput({ sendFGColor: color })}
           />
-        </div>
-      </div>
+        </FieldRow>
+      </EditorSection>
     </div>
   );
 }

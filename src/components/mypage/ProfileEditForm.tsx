@@ -1,33 +1,33 @@
-import { useState, type FormEvent } from "react";
-import PillButton from "./PillButton";
+// src/components/mypage/ProfileEditForm.tsx
+import { useState } from "react";
+import Field from "@/components/common/Field";
+import EditForm from "@/components/mypage/EditForm";
 import type { ProfileFormValues } from "@/types/user";
-import Field from "../common/Field";
 
 interface ProfileEditFormProps {
   defaultValues: ProfileFormValues;
   onSubmit: (values: ProfileFormValues) => void;
 }
 
+// 프로필(이름, 한줄소개) 수정 폼 컴포넌트
 export default function ProfileEditForm({ defaultValues, onSubmit }: ProfileEditFormProps) {
   const [values, setValues] = useState(defaultValues);
   const canSubmit = values.name.trim().length > 0;
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!canSubmit) return;
-    onSubmit({ name: values.name.trim(), bio: values.bio.trim() });
-  };
+  // 필드별 입력값 변경 핸들러 생성
+  const handleField = (field: keyof ProfileFormValues) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setValues((prev) => ({ ...prev, [field]: e.target.value }));
 
   return (
-    <form
-      aria-label="기본 정보 수정"
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-6 sm:gap-8"
+    <EditForm
+      label="기본 정보 수정"
+      canSubmit={canSubmit}
+      onSubmit={() => onSubmit({ name: values.name.trim(), bio: values.bio.trim() })}
     >
       <Field
         label="이름"
         value={values.name}
-        onChange={(e) => setValues((prev) => ({ ...prev, name: e.target.value }))}
+        onChange={handleField("name")}
         autoComplete="name"
         autoFocus
         required
@@ -35,12 +35,9 @@ export default function ProfileEditForm({ defaultValues, onSubmit }: ProfileEdit
       <Field
         label="한줄소개"
         value={values.bio}
-        onChange={(e) => setValues((prev) => ({ ...prev, bio: e.target.value }))}
+        onChange={handleField("bio")}
         autoComplete="off"
       />
-      <PillButton type="submit" disabled={!canSubmit}>
-        수정완료하기
-      </PillButton>
-    </form>
+    </EditForm>
   );
 }

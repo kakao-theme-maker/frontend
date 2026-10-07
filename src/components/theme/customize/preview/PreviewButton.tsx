@@ -1,3 +1,4 @@
+// src/components/theme/customize/preview/PreviewButton.tsx
 import { useThemeStore } from "@/store/customizeStore";
 
 type ButtonSize = "sm" | "md" | "lg";
@@ -16,6 +17,7 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 
+// 크기별 버튼 프리뷰 컴포넌트
 export default function PreviewButton({
   label, isSelected, size = "lg" }: ButtonPreviewProps) {
   const common = useThemeStore(

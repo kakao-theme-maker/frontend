@@ -1,17 +1,15 @@
-import ChatListScreenPreview from "./ChatListScreenPreview";
-import { useThemeStore } from "@/store/customizeStore";
+// src/components/theme/customize/screen/NotificationScreenPreview.tsx
 import { X } from "lucide-react";
+import { useThemeStore } from "@/store/customizeStore";
+import DimmedChatListScreen from "./DimmedChatListScreen";
 
+// 알림 배너 화면 프리뷰 컴포넌트
 export default function NotificationScreenPreview() {
   const common = useThemeStore((state) => state.theme.common);
   const notification = useThemeStore((state) => state.theme.notification);
 
   return (
-    <div className="absolute inset-0">
-      <ChatListScreenPreview />
-      <div className="absolute inset-0 bg-black/50 rounded-2xl" />
-
-      {/* 상단알림 */}
+    <DimmedChatListScreen>
       <div
         className="absolute top-0 flex w-full h-12 rounded-t-2xl p-2 gap-2"
         style={{ backgroundColor: notification.bgColor }}
@@ -28,7 +26,6 @@ export default function NotificationScreenPreview() {
         <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gray-500/50" />
       </div>
 
-      {/* 하단 배너 */}
       <div className="absolute inset-x-0 bottom-0 font-light text-[10px] text-white">
         <div
           className="absolute bottom-20 w-max h-7 p-1 flex gap-1 items-center rounded-full left-1/2 -translate-x-1/2"
@@ -51,6 +48,6 @@ export default function NotificationScreenPreview() {
           <X size={12} className="absolute right-3 text-white/30" />
         </div>
       </div>
-    </div>
+    </DimmedChatListScreen>
   );
 }

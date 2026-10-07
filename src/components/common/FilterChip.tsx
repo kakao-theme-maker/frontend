@@ -1,10 +1,11 @@
-// components/common/FilterChip.tsx
+// src/components/common/FilterChip.tsx
 interface FilterChipProps {
   label: string;
   active?: boolean;
   onClick?: () => void;
 }
 
+// 필터 선택용 칩 버튼 컴포넌트
 export default function FilterChip({ label, active = false, onClick }: FilterChipProps) {
   return (
     <button
