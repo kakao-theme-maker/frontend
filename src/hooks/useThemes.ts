@@ -18,7 +18,7 @@ function sortByLatest(themes: Theme[]) {
 // 내가 만든 테마 목록(최신순) 조회 훅
 export function useMyThemes() {
   const { data: me } = useMe();
-  const publicUserId = me?.public_user_id ?? "";
+  const publicUserId = me?.publicUserId ?? "";
 
   return useQuery({
     queryKey: ["themes", "user", publicUserId],
@@ -68,7 +68,7 @@ export function useSaveTheme() {
       const body = toThemeUpsertRequest(
         useThemeStore.getState().theme,
         themeName,
-        me.user_email,
+        me.userEmail,
         useUploadedImageStore.getState().ids,
       );
 

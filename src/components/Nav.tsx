@@ -61,7 +61,7 @@ export default function Nav() {
         <div className="ml-auto flex shrink-0 items-center justify-end gap-2 md:ml-0 md:flex-1">
           {me ? (
             <>
-              <Avatar size="sm" src={me.profile_image || undefined} alt="내 프로필" />
+              <Avatar size="sm" src={me.profileImage || undefined} alt="내 프로필" />
               <button
                 type="button"
                 onClick={() => setOpen((v) => !v)}

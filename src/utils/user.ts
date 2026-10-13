@@ -6,9 +6,9 @@ import type { UserProfile } from "@/types/user";
 export function toUserProfile(me: UserResponse): UserProfile {
   return {
     name: me.name,
-    handle: me.public_user_id,
-    bio: "",
-    profileImage: me.profile_image || undefined,
+    handle: me.publicUserId,
+    bio: me.introduce ?? "",
+    profileImage: me.profileImage || undefined,
     postCount: me.uploads,
     followerCount: me.followers,
     followingCount: me.following,

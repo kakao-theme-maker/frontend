@@ -2,7 +2,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "@/api/auth";
-import { changePassword, updateUserName } from "@/api/users";
+import type { UserProfileUpdateRequest } from "@/api/types";
+import { changePassword, updateUserProfile, updateUserProfileImage } from "@/api/users";
 
 // 로그아웃 훅 (성공 시 캐시를 비우고 홈으로 이동)
 export function useLogout() {
@@ -19,12 +20,23 @@ export function useLogout() {
   });
 }
 
-// 이름 수정 훅
-export function useUpdateName() {
+// 프로필(이름/한줄소개) 수정 훅 (바뀐 값만 보냄)
+export function useUpdateProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (name: string) => updateUserName({ name }),
+    mutationFn: (body: UserProfileUpdateRequest) => updateUserProfile(body),
+    // 내 정보 캐시 갱신
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["me"] }),
+  });
+}
+
+// 프로필 이미지 수정 훅
+export function useUpdateProfileImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => updateUserProfileImage(file),
     // 내 정보 캐시 갱신
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["me"] }),
   });

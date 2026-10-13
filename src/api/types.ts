@@ -10,22 +10,27 @@ export interface PageParams {
 export interface LocalLoginRequest { email: string; password: string }
 export interface UserAuthResponse { accessToken: string; refreshToken: string }
 
+// 내 정보 (GET /api/users/me, 스웨거 UserResponseDto - camelCase)
 export interface UserResponse {
+  userEmail: string
+  profileImage: string
+  profileImageName: string
   name: string
+  introduce?: string
+  publicUserId: string
+  createdAt: string
   followers: number
   following: number
   uploads: number
   gender: 'male' | 'female'
   birth: string
-  user_email: string
-  profile_image: string
-  profile_image_name: string
-  public_user_id: string
-  created_at: string
 }
 
-// PATCH /api/users/me/name
-export interface UpdateNameRequest { name: string }
+// 일부 사용자 API가 감싸서 내려주는 공통 응답 (CustomResponseUserResponseDto 등)
+export interface CustomResponse<T> { status: number; message: string; data: T }
+
+// PATCH /api/users/me (생략하거나 null이면 기존 값 유지, introduce를 빈 문자열로 보내면 소개 비움)
+export interface UserProfileUpdateRequest { name?: string; introduce?: string }
 // PATCH /api/users/me/password
 export interface ChangePasswordRequest { currentPassword: string; newPassword: string }
 

@@ -24,7 +24,7 @@ function MemberHome() {
 
   const recentThemes = (myThemes.data ?? []).slice(0, RECENT_THEMES_COUNT);
   const otherThemes = (allThemes.data ?? [])
-    .filter((theme) => theme.userEmail !== me?.user_email)
+    .filter((theme) => theme.userEmail !== me?.userEmail)
     .slice(0, OTHER_THEMES_COUNT);
 
   return (

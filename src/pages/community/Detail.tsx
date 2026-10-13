@@ -53,7 +53,7 @@ export default function Detail() {
   }
 
   const isFollowing = followOverride ?? post.following ?? false;
-  const isMyPost = me?.user_email === post.user_email;
+  const isMyPost = me?.userEmail === post.user_email;
 
   // 댓글 등록 후 입력창 비우기
   const handleSubmitComment = () => {
@@ -154,7 +154,7 @@ export default function Detail() {
             date={formatMonthDay(c.createdAt)}
             content={c.content}
             profileImage={c.profileImageUrl || undefined}
-            isOwner={me?.user_email === c.userEmail}
+            isOwner={me?.userEmail === c.userEmail}
             onEdit={(content) => updateComment.mutate({ commentId: c.commentId, content })}
             onDelete={() => deleteComment.mutate(c.commentId)}
           />

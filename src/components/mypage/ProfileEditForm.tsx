@@ -9,6 +9,8 @@ interface ProfileEditFormProps {
   onSubmit: (values: ProfileFormValues) => void;
 }
 
+const BIO_MAX_LENGTH = 100;
+
 // 프로필(이름, 한줄소개) 수정 폼 컴포넌트
 export default function ProfileEditForm({ defaultValues, onSubmit }: ProfileEditFormProps) {
   const [values, setValues] = useState(defaultValues);
@@ -37,6 +39,7 @@ export default function ProfileEditForm({ defaultValues, onSubmit }: ProfileEdit
         value={values.bio}
         onChange={handleField("bio")}
         autoComplete="off"
+        maxLength={BIO_MAX_LENGTH}
       />
     </EditForm>
   );
