@@ -46,11 +46,11 @@ export default function GuestHome() {
         />
         <ThemeGrid>
           {boards.map((board) => (
-            <Link key={board.post_id} to={`/community/${board.post_id}`} className="block min-w-0">
+            <Link key={board.postId} to={`/community/${board.postId}`} className="block min-w-0">
               <CommunityThemeCard
                 title={board.title}
                 likeCount={board.prefers}
-                image={board.preview_image_url || undefined}
+                image={board.previewImageUrl || undefined}
               />
             </Link>
           ))}

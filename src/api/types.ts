@@ -120,14 +120,37 @@ export interface ThemeBoardCreate {
   post_tags?: TagCreate[]
   public_flag?: boolean
 }
+// 테마 게시글 목록 항목 (스웨거 ThemeBoardPreviewDto - camelCase)
 export interface ThemeBoardPreview {
+  postId: number
+  themeComponentId: number
   title: string
+  previewImageUrl: string
+  userEmail: string
+  createdAt: string
   prefers: number
-  post_id: number
-  theme_component_id: number
-  preview_image_url: string
-  user_email: string
-  created_at: string
+}
+
+// 내 게시글 / 좋아요한 게시글 (스웨거 UserPostListResponseDto - camelCase)
+export type PostType = 'THEME_BOARD'
+export interface UserPostParams extends PageParams {
+  postType?: PostType
+}
+export interface UserPost {
+  postId: number
+  postType: PostType
+  title: string
+  content: string
+  tags: { tagId: number; tagName: string }[]
+  previewImageUrl: string[]
+  createdAt: string
+  updatedAt: string
+  authorName: string
+  authorProfileImageUrl: string
+  prefers: number
+  comments: number
+  preferred: boolean
+  bookmarked: boolean
 }
 export interface ThemeBoardDetail {
   title: string
@@ -139,43 +162,6 @@ export interface ThemeBoardDetail {
   bookmarked: boolean
   post_id: number
   theme_component_id: number
-  user_email: string
-  user_name: string
-  created_at: string
-  preview_image_url: string[]
-  profile_image: string
-  following?: boolean
-}
-
-export interface DesignBoardListParams extends BoardListParams {
-  typeCode?: string
-}
-export interface DesignBoardCreate {
-  title: string
-  content: string
-  designComponentId: number
-  public_flag?: boolean
-  post_tags?: TagCreate[]
-}
-export interface DesignBoardPreview {
-  title: string
-  prefers: number
-  post_id: number
-  design_component_id: number
-  preview_image_url: string
-  user_email: string
-  created_at: string
-}
-export interface DesignBoardDetail {
-  title: string
-  content: string
-  prefers: number
-  comments: number
-  tags: TagResponse[]
-  liked: boolean
-  bookmarked: boolean
-  post_id: number
-  design_component_id: number
   user_email: string
   user_name: string
   created_at: string

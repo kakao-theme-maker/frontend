@@ -1,7 +1,7 @@
 // src/api/users.ts
 import { api } from './client'
 import type {
-  ChangePasswordRequest, CustomResponse, UserProfileUpdateRequest, UserResponse,
+  ChangePasswordRequest, CustomResponse, UserPost, UserPostParams, UserProfileUpdateRequest, UserResponse,
 } from './types'
 
 // 현재 로그인한 사용자 정보 조회
@@ -22,3 +22,11 @@ export const updateUserProfileImage = (file: File) => {
 // 비밀번호 변경 (현재 비밀번호 + 새 비밀번호)
 export const changePassword = (body: ChangePasswordRequest) =>
   api.patch<string>('/api/users/me/password', body).then((r) => r.data)
+
+// 내가 작성한 게시글 목록 조회
+export const getMyUploadPosts = (params?: UserPostParams) =>
+  api.get<UserPost[]>('/api/users/me/upload-posts', { params }).then((r) => r.data)
+
+// 내가 좋아요한 게시글 목록 조회
+export const getMyPreferredPosts = (params?: UserPostParams) =>
+  api.get<UserPost[]>('/api/users/me/preferred-posts', { params }).then((r) => r.data)

@@ -42,3 +42,7 @@ export const getThemeDownload = (themeId: number, platform: Platform) =>
   api
     .get<ThemeDownloadResponse>(`/api/themes/${themeId}/download`, { params: { platform } })
     .then((r) => r.data)
+
+// 테마 삭제
+export const deleteTheme = (themeId: number) =>
+  api.delete<void>(`/api/themes/${themeId}`).then((r) => r.data)

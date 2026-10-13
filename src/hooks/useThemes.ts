@@ -2,7 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Theme } from "@/api/types";
 import {
-  buildTheme, createTheme, getTheme, getThemeBuild, getThemeDownload, getThemes, getThemesByUser, updateTheme,
+  buildTheme, createTheme, deleteTheme, getTheme, getThemeBuild, getThemeDownload, getThemes, getThemesByUser, updateTheme,
 } from "@/api/themes";
 import type { Platform } from "@/api/types";
 import { useThemeStore } from "@/store/customizeStore";
@@ -15,6 +15,9 @@ function sortByLatest(themes: Theme[]) {
   return [...themes].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+// 내 테마는 한 번에 넉넉히 받아 프론트에서 정렬/페이지 처리 (서버 기본 크기는 20개)
+const MY_THEMES_FETCH_SIZE = 100;
+
 // 내가 만든 테마 목록(최신순) 조회 훅
 export function useMyThemes() {
   const { data: me } = useMe();
@@ -23,7 +26,7 @@ export function useMyThemes() {
   return useQuery({
     queryKey: ["themes", "user", publicUserId],
     // 내 테마 목록 요청
-    queryFn: () => getThemesByUser(publicUserId),
+    queryFn: () => getThemesByUser(publicUserId, { size: MY_THEMES_FETCH_SIZE }),
     enabled: publicUserId !== "",
     select: sortByLatest,
   });
@@ -37,6 +40,17 @@ export function useAllThemes() {
     queryFn: () => getThemes(),
     // 비공개 테마를 제외하고 최신순으로 정렬
     select: (themes) => sortByLatest(themes.filter((theme) => theme.isPublic)),
+  });
+}
+
+// 테마 삭제 훅
+export function useDeleteTheme() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (themeId: number) => deleteTheme(themeId),
+    // 테마 목록 캐시 무효화
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["themes"] }),
   });
 }
 

@@ -49,8 +49,11 @@ export function useCreateThemeBoard() {
   return useMutation({
     // 게시글 작성 요청 전송
     mutationFn: (boardInfo: ThemeBoardCreate) => createThemeBoard(boardInfo),
-    // 작성 후 게시글 목록 캐시 무효화
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["theme-boards"] }),
+    // 작성 후 게시글 목록(내 게시글 포함) 캐시 무효화
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["theme-boards"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
   });
 }
 
@@ -66,8 +69,11 @@ export function useToggleLike(postId: number) {
 
   return useMutation({
     mutationFn: (liked: boolean) => (liked ? unpreferPost(postId) : preferPost(postId)),
-    // 상세 캐시 갱신
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: detailKey(postId) }),
+    // 상세 캐시와 좋아요한 게시글 목록 갱신
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: detailKey(postId) });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
   });
 }
 

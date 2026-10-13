@@ -15,7 +15,7 @@ import ThemeGrid from "@/components/common/ThemeGrid";
 import ThemeSelectCard from "@/components/community/ThemeSelectedCard";
 import type { PostInfoValues } from "@/components/form/ThemePostForm";
 import ThemePostForm from "@/components/form/ThemePostForm";
-import { POST_TYPES, THEME_SORT_OPTIONS } from "@/config/community";
+import { THEME_SORT_OPTIONS } from "@/config/community";
 import { useCreateThemeBoard } from "@/hooks/useThemeBoards";
 import { useMyThemes } from "@/hooks/useThemes";
 import { formatDate } from "@/utils/format";
@@ -32,7 +32,6 @@ const INITIAL_POST_INFO: PostInfoValues = {
 // 커뮤니티 글쓰기 페이지
 export default function Write() {
   const navigate = useNavigate();
-  const [postType, setPostType] = useState(POST_TYPES[0]);
   const [sort, setSort] = useState<(typeof THEME_SORT_OPTIONS)[number]>(THEME_SORT_OPTIONS[0]);
   const [keyword, setKeyword] = useState("");
   const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
@@ -42,7 +41,6 @@ export default function Write() {
   const myThemes = useMyThemes();
   const createBoard = useCreateThemeBoard();
 
-  const isThemePost = postType === POST_TYPES[0];
   const matchedThemes = (myThemes.data ?? []).filter((theme) =>
     theme.themeName.includes(keyword.trim()),
   );
@@ -51,7 +49,6 @@ export default function Write() {
   const currentPage = Math.min(page, totalPages);
   const pageThemes = sortedThemes.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const canSubmit =
-    isThemePost &&
     selectedThemeId !== null &&
     postInfo.title.trim() !== "" &&
     !createBoard.isPending;
@@ -78,10 +75,7 @@ export default function Write() {
 
   return (
     <PageContainer>
-      <div className="flex items-center gap-3">
-        <PageTitle>글쓰기</PageTitle>
-        <SelectMenu value={postType} options={POST_TYPES} onChange={setPostType} />
-      </div>
+      <PageTitle>글쓰기</PageTitle>
 
       <Card className="mt-6">
         <SectionTitle size="md">테마 선택</SectionTitle>
@@ -139,11 +133,6 @@ export default function Write() {
           {createBoard.isPending ? "올리는 중..." : "글 올리기"}
         </Button>
       </div>
-      {!isThemePost && (
-        <p className="mt-3 text-right text-sm text-slate-400">
-          이 유형의 글쓰기는 아직 지원하지 않아요.
-        </p>
-      )}
       {createBoard.isError && (
         <p className="mt-3 text-right text-sm text-danger">
           글 올리기에 실패했어요. 다시 시도해 주세요.
