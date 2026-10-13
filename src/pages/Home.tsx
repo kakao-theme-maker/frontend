@@ -55,7 +55,11 @@ function MemberHome() {
         />
         <ThemeGrid>
           {recentThemes.map((theme) => (
-            <ThemeCard key={theme.themeComponentId} theme={theme} />
+            <ThemeCard
+              key={theme.themeComponentId}
+              theme={theme}
+              to={`/themes/${theme.themeComponentId}/customize`}
+            />
           ))}
         </ThemeGrid>
       </section>

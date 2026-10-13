@@ -50,7 +50,7 @@ export default function GuestHome() {
               <CommunityThemeCard
                 title={board.title}
                 likeCount={board.prefers}
-                image={board.previewImageUrl || undefined}
+                image={board.previewImageUrl[0] || undefined}
               />
             </Link>
           ))}

@@ -5,9 +5,9 @@ import type {
   ThemeDownloadResponse, ThemeUpsertRequest,
 } from './types'
 
-// 전체 테마 목록 조회
-export const getThemes = (params?: PageParams) =>
-  api.get<Theme[]>('/api/themes', { params }).then((r) => r.data)
+// 공개된 테마 목록 조회
+export const getPublicThemes = (params?: PageParams) =>
+  api.get<Theme[]>('/api/themes/public', { params }).then((r) => r.data)
 
 // 특정 유저의 테마 목록 조회
 export const getThemesByUser = (publicUserId: string, params?: PageParams) =>

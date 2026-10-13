@@ -131,6 +131,17 @@ export interface ThemeBoardPreview {
   prefers: number
 }
 
+// 테마 게시글 상세 목록 항목 (스웨거 ThemeBoardDetailDto 중 목록에서 쓰는 필드 - camelCase, 비로그인도 조회 가능)
+export interface ThemeBoardDetailItem {
+  postId: number
+  themeComponentId: number
+  title: string
+  previewImageUrl: string[]
+  userEmail: string
+  createdAt: string
+  prefers: number
+}
+
 // 내 게시글 / 좋아요한 게시글 (스웨거 UserPostListResponseDto - camelCase)
 export type PostType = 'THEME_BOARD'
 export interface UserPostParams extends PageParams {

@@ -4,7 +4,7 @@ import {
   bookmarkPost, createPostComment, deletePostComment, getPostComments, preferPost,
   unbookmarkPost, unpreferPost, updatePostComment,
 } from "@/api/posts";
-import { createThemeBoard, getThemeBoard, getThemeBoards } from "@/api/themeBoards";
+import { createThemeBoard, getThemeBoard, getThemeBoardDetails, getThemeBoards } from "@/api/themeBoards";
 import type { ThemeBoardCreate } from "@/api/types";
 
 const PAGE_SIZE = 18;
@@ -23,12 +23,12 @@ export function useThemeBoardList(keyword: string, sort?: string[]) {
   });
 }
 
-// 첫 페이지의 테마 게시글 일부만 가져오는 훅 (비로그인 홈 미리보기용)
+// 최신 테마 게시글 일부만 가져오는 훅 (비로그인도 조회 가능한 상세 목록 API 사용, 비로그인 홈 미리보기용)
 export function useThemeBoardPreview(size: number) {
   return useQuery({
     queryKey: ["theme-boards", "preview", size],
-    // 첫 페이지 요청
-    queryFn: () => getThemeBoards({ page: 0, size }),
+    // 최신순 첫 페이지 요청
+    queryFn: () => getThemeBoardDetails({ page: 0, size, sort: ["createdAt,DESC"] }),
   });
 }
 

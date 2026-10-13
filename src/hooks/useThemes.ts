@@ -2,7 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Theme } from "@/api/types";
 import {
-  buildTheme, createTheme, deleteTheme, getTheme, getThemeBuild, getThemeDownload, getThemes, getThemesByUser, updateTheme,
+  buildTheme, createTheme, deleteTheme, getTheme, getThemeBuild, getThemeDownload, getPublicThemes, getThemesByUser, updateTheme,
 } from "@/api/themes";
 import type { Platform } from "@/api/types";
 import { useThemeStore } from "@/store/customizeStore";
@@ -32,14 +32,16 @@ export function useMyThemes() {
   });
 }
 
-// 공개된 전체 테마 목록(최신순) 조회 훅
+// 홈에서 보여줄 공개 테마를 받아오는 개수 (내 테마를 제외하고도 충분하도록 넉넉히)
+const PUBLIC_THEMES_FETCH_SIZE = 20;
+
+// 공개된 테마 목록(최신순) 조회 훅
 export function useAllThemes() {
   return useQuery({
-    queryKey: ["themes", "all"],
-    // 전체 테마 목록 요청
-    queryFn: () => getThemes(),
-    // 비공개 테마를 제외하고 최신순으로 정렬
-    select: (themes) => sortByLatest(themes.filter((theme) => theme.isPublic)),
+    queryKey: ["themes", "public"],
+    // 공개 테마를 최신순으로 요청 (서버 기본 정렬은 오래된순)
+    queryFn: () => getPublicThemes({ size: PUBLIC_THEMES_FETCH_SIZE, sort: ["createdAt,desc"] }),
+    select: sortByLatest,
   });
 }
 
