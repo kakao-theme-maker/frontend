@@ -7,7 +7,7 @@ interface SelectMenuProps<T extends string> {
   value: T;
   options: readonly T[];
   onChange: (value: T) => void;
-  variant?: "outline" | "neutral";
+  variant?: "outline" | "neutral" | "plain";
   menuClassName?: string;
   className?: string;
 }
@@ -31,16 +31,27 @@ export default function SelectMenu<T extends string>({
 
   return (
     <div className={`relative ${className}`}>
-      <Button
-        type="button"
-        variant={variant}
-        size="sm"
-        onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-1.5"
-      >
-        {value}
-        <ChevronDown size={16} />
-      </Button>
+      {variant === "plain" ? (
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="flex items-center gap-2 text-sm font-semibold text-heading sm:text-base"
+        >
+          {value}
+          <ChevronDown size={18} />
+        </button>
+      ) : (
+        <Button
+          type="button"
+          variant={variant}
+          size="sm"
+          onClick={() => setOpen((prev) => !prev)}
+          className="flex items-center gap-1.5"
+        >
+          {value}
+          <ChevronDown size={16} />
+        </Button>
+      )}
 
       {open && (
         <div className={`absolute top-full z-10 mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg ${menuClassName}`}>
