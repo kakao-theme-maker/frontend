@@ -7,6 +7,7 @@ import GuestHome from "@/components/home/GuestHome";
 import ModeCard from "@/components/home/ModeCard";
 import SectionHeader from "@/components/home/SectionHeader";
 import ThemeCard from "@/components/home/ThemeCard";
+import { CREATE_THEME_PATH } from "@/config/home";
 import useMe from "@/hooks/useMe";
 import { useAllThemes, useMyThemes } from "@/hooks/useThemes";
 
@@ -39,13 +40,13 @@ function MemberHome() {
       <section>
         <h2 className="sr-only">테마 생성 모드 선택</h2>
         <div className="flex flex-col sm:flex-row gap-4 w-full">
-          <ModeCard icon={Loader} title="간편모드" description={MODE_DESCRIPTION} variant="light" />
+          <ModeCard icon={Loader} title="간편모드" description={MODE_DESCRIPTION} variant="light" to={CREATE_THEME_PATH} />
           <ModeCard icon={Sliders} title="디자이너 모드" description={MODE_DESCRIPTION} variant="dark" />
         </div>
       </section>
 
       <section>
-        <SectionHeader title="내가 최근에 만든 디자인" actionLabel="전체보기" />
+        <SectionHeader title="내가 최근에 만든 디자인" actionLabel="전체보기" to="/themes/manage" />
         <QueryStatus
           isLoading={myThemes.isLoading}
           isError={myThemes.isError}
@@ -60,7 +61,7 @@ function MemberHome() {
       </section>
 
       <section>
-        <SectionHeader title="다른 사람들의 테마 둘러보기" actionLabel="더보기" />
+        <SectionHeader title="다른 사람들의 테마 둘러보기" actionLabel="더보기" to="/community" />
         <QueryStatus
           isLoading={allThemes.isLoading}
           isError={allThemes.isError}
