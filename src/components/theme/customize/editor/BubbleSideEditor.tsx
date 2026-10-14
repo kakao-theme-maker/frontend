@@ -1,6 +1,7 @@
 // src/components/theme/customize/editor/BubbleSideEditor.tsx
 import ColorChip from "@/components/common/ColorChip";
 import Input from "@/components/common/Input";
+import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
 import BubbleImageField from "./BubbleImageField";
 import EditorField from "./EditorField";
@@ -30,6 +31,7 @@ export default function BubbleSideEditor({ side, title }: BubbleSideEditorProps)
         {imageKeys.map((key, index) => (
           <BubbleImageField
             key={key}
+            typeCode={typeCodeOf("bubble", key)}
             label={`배경 이미지 ${index + 1}`}
             alt={`${title} 배경 이미지 ${index + 1}`}
             value={bubble[key]}

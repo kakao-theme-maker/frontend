@@ -1,13 +1,12 @@
 // src/hooks/useThemes.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Theme } from "@/api/types";
+import type { Platform, Theme, ThemeDetailResponse } from "@/api/types";
 import {
   buildTheme, createTheme, deleteTheme, getTheme, getThemeBuild, getThemeDownload, getPublicThemes, getThemesByUser, updateTheme,
 } from "@/api/themes";
-import type { Platform } from "@/api/types";
 import { useThemeStore } from "@/store/customizeStore";
 import { useUploadedImageStore } from "@/store/uploadedImageStore";
-import { toThemeUpsertRequest } from "@/utils/themeRequest";
+import { toThemeUpdateRequest } from "@/utils/themeRequest";
 import useMe from "./useMe";
 
 // 테마 목록을 최신 생성일 순으로 정렬
@@ -74,28 +73,35 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // 테마 임시저장 훅 (themeId가 없으면 새로 만들고, 있으면 수정). 저장된 테마 id 반환
 export function useSaveTheme() {
-  const { data: me } = useMe();
   const queryClient = useQueryClient();
 
   return useMutation({
     // 현재 스토어의 테마 설정을 서버에 저장
     mutationFn: async ({ themeId, themeName }: { themeId?: number; themeName: string }) => {
-      if (!me) throw new Error("로그인 정보를 불러오지 못했어요.");
-      const body = toThemeUpsertRequest(
+      let id = themeId;
+      let base: ThemeDetailResponse;
+
+      if (id === undefined) {
+        // 새 테마: 기본 이미지·색상이 채워진 테마를 먼저 만든 뒤, 편집한 내용을 덮어씀
+        base = await createTheme();
+        id = base.themeComponentId;
+      } else {
+        base = await queryClient.fetchQuery({
+          queryKey: ["themes", "detail", id],
+          queryFn: () => getTheme(id as number),
+        });
+      }
+
+      const body = toThemeUpdateRequest(
         useThemeStore.getState().theme,
         themeName,
-        me.userEmail,
         useUploadedImageStore.getState().ids,
+        base,
       );
-
-      if (themeId === undefined) {
-        const created = await createTheme(body);
-        return created.themeComponentId;
-      }
-      await updateTheme(themeId, body);
-      return themeId;
+      await updateTheme(id, body);
+      return id;
     },
-    // 저장 후 테마 목록 캐시 무효화
+    // 저장 후 테마 목록·상세 캐시 무효화
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["themes"] }),
   });
 }
@@ -104,15 +110,15 @@ export function useSaveTheme() {
 export function useDownloadTheme() {
   return useMutation({
     mutationFn: async ({ themeId, platform }: { themeId: number; platform: Platform }) => {
-      const { buildId } = await buildTheme(themeId);
+      const { buildId } = await buildTheme(themeId, platform);
 
       for (let i = 0; i < BUILD_POLL_MAX; i++) {
         const build = await getThemeBuild(buildId);
-        if (build.status === "success") {
+        if (build.status === "SUCCESS") {
           const { downloadUrl } = await getThemeDownload(themeId, platform);
           return downloadUrl;
         }
-        if (build.status === "failed") throw new Error("테마 빌드에 실패했어요.");
+        if (build.status === "FAILED") throw new Error("테마 빌드에 실패했어요.");
         await sleep(BUILD_POLL_INTERVAL);
       }
       throw new Error("테마 빌드 시간이 너무 오래 걸려요.");

@@ -69,7 +69,7 @@ export default function Write() {
         themeComponentId: selectedThemeId,
       },
       // 작성한 게시글 상세 페이지로 이동
-      { onSuccess: (post) => navigate(`/community/${post.post_id}`) },
+      { onSuccess: (post) => navigate(`/community/${post.postId}`) },
     );
   };
 

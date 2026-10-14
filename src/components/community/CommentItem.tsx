@@ -1,5 +1,6 @@
 // src/components/community/CommentItem.tsx
 import { useState } from "react";
+import { Heart } from "lucide-react";
 import Avatar from "@/components/common/Avatar";
 import Input from "@/components/common/Input";
 import TextButton from "@/components/common/TextButton";
@@ -10,21 +11,25 @@ interface CommentItemProps {
   content: string;
   profileImage?: string;
   isOwner?: boolean;
+  likeCount?: number;
+  liked?: boolean;
+  onToggleLike?: () => void;
   onEdit?: (content: string) => void;
   onDelete?: () => void;
-  onReply?: () => void;
 }
 
-// 댓글 한 건을 표시하는 컴포넌트 (내 댓글은 제자리에서 수정 가능)
+// 댓글 한 건을 표시하는 컴포넌트 (좋아요 가능, 내 댓글은 제자리에서 수정/삭제 가능)
 export default function CommentItem({
   name,
   date,
   content,
   profileImage,
   isOwner = false,
+  likeCount = 0,
+  liked = false,
+  onToggleLike,
   onEdit,
   onDelete,
-  onReply,
 }: CommentItemProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
@@ -64,27 +69,35 @@ export default function CommentItem({
           <p className="pt-1 text-slate-700">{content}</p>
         )}
 
-        {isOwner ? (
-          <div className="flex items-center gap-1 pt-1 text-sm text-slate-400">
-            {editing ? (
+        <div className="flex items-center gap-1 pt-1 text-sm text-slate-400">
+          <button
+            type="button"
+            onClick={onToggleLike}
+            aria-label={liked ? "댓글 좋아요 취소" : "댓글 좋아요"}
+            aria-pressed={liked}
+            className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "hover:text-slate-600"}`}
+          >
+            <Heart size={14} className={liked ? "fill-current" : ""} />
+            {likeCount}
+          </button>
+
+          {isOwner &&
+            (editing ? (
               <>
+                <span>·</span>
                 <TextButton onClick={handleSave}>저장</TextButton>
                 <span>·</span>
                 <TextButton onClick={handleCancel}>취소</TextButton>
               </>
             ) : (
               <>
+                <span>·</span>
                 <TextButton onClick={() => setEditing(true)}>수정</TextButton>
                 <span>·</span>
                 <TextButton onClick={onDelete}>삭제</TextButton>
               </>
-            )}
-          </div>
-        ) : (
-          <TextButton onClick={onReply} className="pt-1 text-sm text-slate-400">
-            답글달기
-          </TextButton>
-        )}
+            ))}
+        </div>
       </div>
     </div>
   );

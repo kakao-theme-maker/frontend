@@ -1,42 +1,100 @@
 // src/utils/themeRequest.ts
-import type { ThemeImageRequest, ThemeStyle, ThemeStyleRequest, ThemeUpsertRequest } from "@/api/types";
-import { COLOR_STYLE_MAP, IMAGE_TYPE_MAP, type ColorEntry } from "@/config/themeStyleMap";
+import type {
+  Inset, ThemeDetailResponse, ThemeImageUpdateRequest, ThemeStyleUpdateRequest, ThemeUpdateRequest,
+} from "@/api/types";
+import { COLOR_STYLE_MAP, IMAGE_TYPE_MAP } from "@/config/themeStyleMap";
 import type { SimpleThemeConfig } from "@/types/theme";
+import { formatAsset, parseAsset, parseEdgeInsets } from "@/utils/bubbleStyle";
 
-// 스토어의 테마 설정을 서버 저장 요청 형태로 변환
-// uploadedIds: 업로드한 이미지 URL -> designComponentId (기본 이미지처럼 업로드하지 않은 이미지는 제외)
-export function toThemeUpsertRequest(
-  theme: SimpleThemeConfig,
-  themeName: string,
-  userEmail: string,
-  uploadedIds: Record<string, number>,
-): ThemeUpsertRequest {
-  const styles: ThemeStyleRequest[] = [];
-  for (const { section, key, colorStyleId } of COLOR_STYLE_MAP) {
-    if (colorStyleId === null) continue;
-    const color = (theme[section] as unknown as Record<string, string>)[key];
-    if (color) styles.push({ colorStyleId, color });
-  }
+type Section = keyof SimpleThemeConfig;
+// 섹션별로 바뀐 값만 담은 테마 설정 (스토어에 덮어쓸 값)
+export type ThemePatch = Partial<Record<Section, Record<string, string>>>;
 
-  const images: ThemeImageRequest[] = [];
-  for (const { section, key, componentTypeId } of IMAGE_TYPE_MAP) {
-    if (componentTypeId === null) continue;
-    const value = (theme[section] as unknown as Record<string, string>)[key];
-    // 말풍선 값은 "url 가로 세로" 형태라서 첫 토큰만 URL로 사용
-    const designComponentId = value ? uploadedIds[value.split(" ")[0]] : undefined;
-    if (designComponentId !== undefined) images.push({ designComponentId, componentTypeId });
-  }
-
-  return { userEmail, themeName, styles, images };
+// 섹션/키로 스토어 값을 읽기
+function read(theme: SimpleThemeConfig, section: Section, key: string): string {
+  return (theme[section] as unknown as Record<string, string>)[key] ?? "";
 }
 
-// 서버에서 받은 스타일 목록을 스토어에 반영할 색상 항목으로 변환
-export function toColorEntries(styles: ThemeStyle[] = []): ColorEntry[] {
-  const entries: ColorEntry[] = [];
-  for (const { section, key, colorStyleId } of COLOR_STYLE_MAP) {
-    if (colorStyleId === null) continue;
-    const style = styles.find((s) => s.colorStyleId === colorStyleId);
-    if (style?.color) entries.push({ section, key, color: style.color });
+// 색상 문자열을 "#RRGGBB" 형태로 정리 (투명도 자리 8자리는 alpha로 따로 관리하므로 제외)
+function normalizeHex(color: string): string {
+  return `#${color.replace("#", "").slice(0, 6)}`;
+}
+
+// 스토어의 테마 설정을 서버 수정 요청 형태로 변환
+// uploadedIds: 이미지 URL -> designComponentId (업로드했거나 서버에서 받은 이미지)
+// base: 서버의 현재 테마 (말풍선 인셋만 바꾼 경우 기존 이미지 ID를 쓰고, 색상 투명도를 유지하기 위함)
+export function toThemeUpdateRequest(
+  theme: SimpleThemeConfig,
+  themeName: string,
+  uploadedIds: Record<string, number>,
+  base?: ThemeDetailResponse,
+): ThemeUpdateRequest {
+  const styleCodes: Record<string, ThemeStyleUpdateRequest> = {};
+  for (const { section, key, styleCode } of COLOR_STYLE_MAP) {
+    const color = read(theme, section, key);
+    if (!color) continue;
+    styleCodes[styleCode] = { color: normalizeHex(color), alpha: base?.styleCodes[styleCode]?.alpha ?? 100 };
   }
-  return entries;
+
+  const typeCodes: Record<string, ThemeImageUpdateRequest> = {};
+  for (const { section, key, typeCode, insetKey } of IMAGE_TYPE_MAP) {
+    const value = read(theme, section, key);
+    // 말풍선 값은 "url 가로 세로" 형태라서 첫 토큰만 URL로 사용
+    const asset = parseAsset(value);
+    const uploadedId = asset.url ? uploadedIds[asset.url] : undefined;
+
+    if (insetKey === undefined) {
+      if (uploadedId !== undefined) typeCodes[typeCode] = { designComponentId: uploadedId };
+      continue;
+    }
+
+    // 말풍선: 이미지를 바꾸지 않았어도 여백이 바뀌었을 수 있어서 항상 인셋을 함께 보냄
+    const designComponentId = uploadedId ?? base?.typeCodes[typeCode]?.designComponentId;
+    if (designComponentId === undefined) continue;
+    const { top, left, bottom, right } = parseEdgeInsets(read(theme, section, insetKey));
+    typeCodes[typeCode] = {
+      designComponentId,
+      inset: { top, left, bottom, right, stretchX: asset.width, stretchY: asset.height },
+    };
+  }
+
+  return { themeName, typeCodes, styleCodes };
+}
+
+// 서버의 테마를 스토어에 반영할 값으로 변환 (이미지 URL -> designComponentId 목록도 함께 반환)
+export function fromThemeDetail(detail: ThemeDetailResponse): {
+  themeName: string;
+  patch: ThemePatch;
+  imageIds: Record<string, number>;
+} {
+  const patch: ThemePatch = {};
+  const set = (section: Section, key: string, value: string) => {
+    patch[section] = { ...patch[section], [key]: value };
+  };
+
+  for (const { section, key, styleCode } of COLOR_STYLE_MAP) {
+    const style = detail.styleCodes[styleCode];
+    if (style?.color) set(section, key, normalizeHex(style.color));
+  }
+
+  const imageIds: Record<string, number> = {};
+  for (const { section, key, typeCode, insetKey } of IMAGE_TYPE_MAP) {
+    const info = detail.typeCodes[typeCode];
+    if (!info?.imageUrl) continue;
+    imageIds[info.imageUrl] = info.designComponentId;
+
+    if (insetKey === undefined) {
+      set(section, key, info.imageUrl);
+      continue;
+    }
+    // 말풍선: 이미지와 늘어나는 위치("url 가로 세로"), 내용 여백("위 왼쪽 아래 오른쪽")을 함께 반영
+    const inset: Inset | null | undefined = info.inset;
+    if (inset) {
+      set(section, key, formatAsset(info.imageUrl, inset.stretchX, inset.stretchY));
+      set(section, insetKey, `${inset.top}px ${inset.left}px ${inset.bottom}px ${inset.right}px`);
+    }
+    // 인셋이 없으면 기존 기본값(이미지·크기·여백)을 그대로 유지
+  }
+
+  return { themeName: detail.themeName, patch, imageIds };
 }

@@ -1,21 +1,21 @@
 // src/hooks/useThemeBoards.ts
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  bookmarkPost, createPostComment, deletePostComment, getPostComments, preferPost,
-  unbookmarkPost, unpreferPost, updatePostComment,
+  bookmarkPost, createPostComment, deletePostComment, getPostComments, likeComment, preferPost,
+  unbookmarkPost, unlikeComment, unpreferPost, updatePostComment,
 } from "@/api/posts";
 import { createThemeBoard, getThemeBoard, getThemeBoardDetails, getThemeBoards } from "@/api/themeBoards";
-import type { ThemeBoardCreate } from "@/api/types";
+import type { BoardSortType, ThemeBoardCreate } from "@/api/types";
 
 const PAGE_SIZE = 18;
 
 // 테마 게시글 목록(검색어, 더 불러오기) 조회 훅
-export function useThemeBoardList(keyword: string, sort?: string[]) {
+export function useThemeBoardList(keyword: string, sortType?: BoardSortType) {
   return useInfiniteQuery({
-    queryKey: ["theme-boards", keyword, sort],
+    queryKey: ["theme-boards", "list", keyword, sortType],
     // 페이지 단위로 테마 게시글 목록 요청
     queryFn: ({ pageParam }) =>
-      getThemeBoards({ keyword: keyword || undefined, page: pageParam, size: PAGE_SIZE, sort }),
+      getThemeBoards({ keyword: keyword || undefined, page: pageParam, size: PAGE_SIZE, sort_type: sortType }),
     initialPageParam: 0,
     // 마지막 페이지가 가득 찼으면 다음 페이지 번호 반환
     getNextPageParam: (lastPage, allPages) =>
@@ -133,6 +133,18 @@ export function useUpdateComment(postId: number) {
   return useMutation({
     mutationFn: ({ commentId, content }: { commentId: number; content: string }) =>
       updatePostComment(commentId, content),
+    // 댓글 목록 갱신
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: commentsKey(postId) }),
+  });
+}
+
+// 댓글 좋아요 토글 훅 (인자: 댓글 ID, 현재 좋아요 여부)
+export function useToggleCommentLike(postId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ commentId, liked }: { commentId: number; liked: boolean }) =>
+      liked ? unlikeComment(commentId) : likeComment(commentId),
     // 댓글 목록 갱신
     onSuccess: () => queryClient.invalidateQueries({ queryKey: commentsKey(postId) }),
   });

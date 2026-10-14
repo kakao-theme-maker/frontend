@@ -2,6 +2,7 @@
 import ColorChip from "@/components/common/ColorChip";
 import ImageUpload from "@/components/common/ImageUpload";
 import { CODE_IMAGE_COLUMNS } from "@/config/themeAssets";
+import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
 import EditorField from "./EditorField";
 import EditorSection from "./EditorSection";
@@ -24,6 +25,7 @@ export default function PasscodeEditor() {
       <EditorSection title="잠금 화면 불릿">
         <p>각 칸을 눌러 이미지를 채우세요</p>
         <StateImageGrid
+          section="passcode"
           columns={CODE_IMAGE_COLUMNS}
           values={passcode}
           onChange={(key, url) => setPasscode({ [key]: url })}
@@ -35,6 +37,7 @@ export default function PasscodeEditor() {
         <FieldRow>
           <EditorField label="배경 이미지">
             <ImageUpload
+              typeCode={typeCodeOf("passcode", "bgImage")}
               value={passcode.bgImage}
               onChange={(url) => setPasscode({ bgImage: url })}
               onRemove={() => setPasscode({ bgImage: "" })}
@@ -46,12 +49,6 @@ export default function PasscodeEditor() {
 
       <EditorSection title="키패드">
         <FieldRow>
-          <ImageUpload
-            value={passcode.keypadPressed}
-            onChange={(url) => setPasscode({ keypadPressed: url })}
-            onRemove={() => setPasscode({ keypadPressed: "" })}
-            alt="키패드 입력 이미지"
-          />
           <ColorChip
             label="키패드 배경"
             hex={passcode.keypadBGColor}

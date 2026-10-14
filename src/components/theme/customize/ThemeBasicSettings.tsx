@@ -3,6 +3,7 @@ import Card from "@/components/common/Card";
 import ColorChip from "@/components/common/ColorChip";
 import ImageUpload from "@/components/common/ImageUpload";
 import Input from "@/components/common/Input";
+import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
 import EditorField from "./editor/EditorField";
 
@@ -34,6 +35,7 @@ export default function ThemeBasicSettings() {
       <div className="mt-6 flex flex-col gap-4">
         <EditorField label="테마 이미지">
           <ImageUpload
+            typeCode={typeCodeOf("common", "mainBGImage")}
             value={common.mainBGImage}
             onChange={(url) => setCommon({ mainBGImage: url })}
             onRemove={() => setCommon({ mainBGImage: "" })}
@@ -43,6 +45,7 @@ export default function ThemeBasicSettings() {
 
         <EditorField label="기본 프로필">
           <ImageUpload
+            typeCode={typeCodeOf("common", "profileImage01")}
             value={common.profileImage01}
             onChange={(url) => setCommon({ profileImage01: url })}
             onRemove={() => setCommon({ profileImage01: "" })}

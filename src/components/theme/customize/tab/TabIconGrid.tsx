@@ -12,6 +12,7 @@ export default function TabIconGrid() {
   return (
     <Card size="sm">
       <StateImageGrid
+        section="tabBar"
         columns={TAB_ICON_COLUMNS}
         values={tabBar}
         onChange={(key, url) => setTabBar({ [key]: url })}

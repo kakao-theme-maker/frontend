@@ -1,6 +1,7 @@
 // src/components/theme/customize/editor/ChatEditor.tsx
 import ColorChip from "@/components/common/ColorChip";
 import ImageUpload from "@/components/common/ImageUpload";
+import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
 import EditorField from "./EditorField";
 import EditorSection from "./EditorSection";
@@ -22,6 +23,7 @@ export default function ChatEditor() {
         <FieldRow>
           <EditorField label="배경 이미지">
             <ImageUpload
+              typeCode={typeCodeOf("chat", "bgImage")}
               value={chat.bgImage}
               onChange={(url) => setChat({ bgImage: url })}
               alt="채팅방 배경 이미지"

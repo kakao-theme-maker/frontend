@@ -11,7 +11,7 @@ import PageTitle from "@/components/common/PageTitle";
 import SearchField from "@/components/common/SearchField";
 import ThemeGrid from "@/components/common/ThemeGrid";
 import QueryStatus from "@/components/common/QueryStatus";
-import { SORT_OPTIONS, SORT_PARAMS } from "@/config/community";
+import { SORT_OPTIONS, SORT_TYPES } from "@/config/community";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
 import { useThemeBoardList } from "@/hooks/useThemeBoards";
 
@@ -22,7 +22,7 @@ export default function Community() {
   const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebouncedValue(keyword.trim());
   const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useThemeBoardList(debouncedKeyword, SORT_PARAMS[activeSort]);
+    useThemeBoardList(debouncedKeyword, SORT_TYPES[activeSort]);
   const boards = data?.pages.flat() ?? [];
 
   return (

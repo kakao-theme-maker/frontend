@@ -34,7 +34,7 @@ export interface UserProfileUpdateRequest { name?: string; introduce?: string }
 // PATCH /api/users/me/password
 export interface ChangePasswordRequest { currentPassword: string; newPassword: string }
 
-// 댓글 (GET /api/posts/{postId}/comments) - 이 응답만 camelCase
+// 댓글 (GET /api/posts/{postId}/comments)
 export interface CommentResponse {
   commentId: number
   userEmail: string
@@ -47,39 +47,33 @@ export interface CommentResponse {
 }
 export interface CommentCreate { content: string }
 
-// 디자인 컴포넌트(업로드한 이미지) 응답
+// 디자인 컴포넌트(업로드한 이미지) 응답 (스웨거 DesignComponentDto - camelCase)
 export interface DesignComponent {
-  design_component_id: number
-  public_user_id: string
-  image_url: string
-  created_at: string
-  updated_at: string
-  is_public: boolean
+  designComponentId: number
+  publicUserId: string
+  imageUrl: string
+  createdAt: string
+  updatedAt: string
+  isPublic: boolean
 }
 
-export interface ThemeStyleRequest { colorStyleId: number; color?: string }
-export interface ThemeImageRequest { designComponentId?: number; componentTypeId?: number }
-
-export interface ThemeUpsertRequest {
-  userEmail: string
-  themeName: string
-  versionName?: string
-  isPublic?: boolean
-  styles?: ThemeStyleRequest[]
-  images?: ThemeImageRequest[]
+// 이미지 종류 (GET /api/component-types, 스웨거 ComponentTypeDto)
+export type PlatformScope = 'common' | 'android' | 'ios'
+export interface ComponentType {
+  componentTypeId: number
+  typeCode: string
+  name: string
+  explain: string
+  platformScope: PlatformScope
 }
 
+// 테마 목록 항목 (스웨거 ThemeComponentDto)
 export interface ThemeStyle {
   colorStyleId: number
   color: string
-  opacity?: number
-  platform?: Platform
 }
 export interface ThemeImage {
   designComponentId: number
-  imageUrl?: string
-  platform?: Platform
-  [extra: string]: unknown
 }
 export interface Theme {
   themeComponentId: number
@@ -95,9 +89,67 @@ export interface Theme {
   images: ThemeImage[]
 }
 
-export type BuildId = string | number
-export interface ThemeBuildCreateResponse { buildId: BuildId }
-export type BuildStatus = 'success' | 'failed' | 'running'
+// 말풍선 인셋 (이미지가 늘어나는 위치와 내용 여백)
+export interface Inset {
+  top: number
+  left: number
+  bottom: number
+  right: number
+  stretchX: number
+  stretchY: number
+}
+
+// 테마 상세 (GET /api/themes/{id}, POST /api/themes 응답 - typeCode/styleCode별 맵)
+export interface TypeCodeInfo {
+  designComponentId: number
+  imageUrl: string
+  platformScope: PlatformScope
+  typeCodeGroup: string
+  typeCodeGroupName: string
+  inset?: Inset | null
+}
+export interface StyleCodeInfo {
+  color: string
+  alpha: number
+  platformScope: PlatformScope
+}
+export interface ThemeDetailResponse {
+  themeComponentId: number
+  themeName: string
+  typeCodes: Record<string, TypeCodeInfo>
+  styleCodes: Record<string, StyleCodeInfo>
+}
+
+// 테마 수정 요청 (PUT /api/themes/{id}) - 바꿀 항목만 담는다
+export interface ThemeImageUpdateRequest {
+  designComponentId?: number
+  inset?: Partial<Inset>
+}
+export interface ThemeStyleUpdateRequest {
+  color: string
+  alpha: number
+}
+export interface ThemeUpdateRequest {
+  themeName?: string
+  typeCodes?: Record<string, ThemeImageUpdateRequest>
+  styleCodes?: Record<string, ThemeStyleUpdateRequest>
+}
+
+// 테마 복제 요청 (POST /api/themes/clone) - platformScope=common 항목을 반드시 포함해야 함
+export interface ThemeCloneRequest extends ThemeUpdateRequest {
+  typeCodes: Record<string, ThemeImageUpdateRequest>
+  styleCodes: Record<string, ThemeStyleUpdateRequest>
+}
+
+// 테마 빌드 (POST /api/themes/{id}/builds, GET /api/theme-builds/{buildId})
+export type BuildId = number
+export type BuildStatus = 'RUNNING' | 'SUCCESS' | 'FAILED'
+export interface ThemeBuildCreateResponse {
+  buildId: BuildId
+  themeComponentId: number
+  platform: Platform
+  status: BuildStatus
+}
 export interface ThemeBuildStatus {
   status: BuildStatus
   downloadUrl?: string
@@ -107,10 +159,17 @@ export interface ThemeDownloadResponse {
 }
 
 export interface TagCreate { tag_name: string }
-export interface TagResponse { tag_id: number; tag_name: string }
+export interface TagResponse { tagId: number; tagName: string }
 
-export interface BoardListParams extends PageParams {
+// 테마 게시글 목록 정렬 기준 (스웨거 sort_type)
+export type BoardSortType = 'CREATED_ASC' | 'CREATED_DESC' | 'PREFER_ASC' | 'PREFER_DESC'
+
+// 테마 게시글 목록 조회 파라미터 (정렬은 sort가 아니라 sort_type 사용)
+export interface BoardListParams {
+  page?: number
+  size?: number
   keyword?: string
+  sort_type?: BoardSortType
 }
 
 export interface ThemeBoardCreate {
@@ -163,20 +222,21 @@ export interface UserPost {
   preferred: boolean
   bookmarked: boolean
 }
+// 테마 게시글 상세 (스웨거 ThemeBoardDetailDto - camelCase)
 export interface ThemeBoardDetail {
+  postId: number
   title: string
   content: string
+  themeComponentId: number
+  userEmail: string
+  userName: string
+  createdAt: string
+  previewImageUrl: string[]
   prefers: number
   comments: number
   tags: TagResponse[]
   liked: boolean
   bookmarked: boolean
-  post_id: number
-  theme_component_id: number
-  user_email: string
-  user_name: string
-  created_at: string
-  preview_image_url: string[]
-  profile_image: string
-  following?: boolean
+  following: boolean
+  profileImage: string
 }

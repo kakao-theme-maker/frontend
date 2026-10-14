@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SimpleThemeConfig } from '@/types/theme'
-import type { ColorEntry } from '@/config/themeStyleMap'
+import type { ThemePatch } from '@/utils/themeRequest'
 
 import defaultIcon from '@/assets/images/commonIcoTheme.png'
 import defaultMainBGImage from '@/assets/images/mainBgImage.png'
@@ -119,8 +119,8 @@ export interface ThemeStore {
   setPasscode: (style: Partial<SimpleThemeConfig['passcode']>) => void
   setNotification: (style: Partial<SimpleThemeConfig['notification']>) => void
 
-  // 서버에서 불러온 테마 이름과 색상을 반영
-  applyServerTheme: (name: string, colors: ColorEntry[]) => void
+  // 서버에서 불러온 테마를 기본값 위에 덮어써서 반영 (이전에 열었던 테마의 값이 남지 않도록)
+  applyServerTheme: (name: string, patch: ThemePatch) => void
 
   resetAll: () => void
 }
@@ -173,12 +173,12 @@ export const useThemeStore = create<ThemeStore>()(
       setNotification: (style) => set(updateSection('notification', style)),
 
       // 테마 전체를 기본값으로 초기화
-      // 서버에서 불러온 테마 이름과 색상을 반영
-      applyServerTheme: (name, colors) =>
-        set((state) => {
-          const theme = structuredClone(state.theme) as unknown as Record<string, Record<string, string>>
-          for (const { section, key, color } of colors) {
-            if (theme[section]) theme[section][key] = color
+      // 서버에서 불러온 테마를 기본값 위에 덮어써서 반영
+      applyServerTheme: (name, patch) =>
+        set(() => {
+          const theme = structuredClone(DEFAULT_THEME) as unknown as Record<string, Record<string, string>>
+          for (const [section, values] of Object.entries(patch)) {
+            if (theme[section]) Object.assign(theme[section], values)
           }
           return { theme: theme as unknown as SimpleThemeConfig, themeName: name }
         }),

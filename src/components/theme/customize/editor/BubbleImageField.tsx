@@ -5,6 +5,7 @@ import { formatAsset, parseAsset } from "@/utils/bubbleStyle";
 import EditorField from "./EditorField";
 
 interface BubbleImageFieldProps {
+  typeCode: string;
   label: string;
   alt: string;
   value: string;
@@ -12,12 +13,13 @@ interface BubbleImageFieldProps {
 }
 
 // 말풍선 배경 이미지와 가로/세로 값을 함께 편집하는 필드 컴포넌트
-export default function BubbleImageField({ label, alt, value, onChange }: BubbleImageFieldProps) {
+export default function BubbleImageField({ typeCode, label, alt, value, onChange }: BubbleImageFieldProps) {
   const asset = parseAsset(value);
 
   return (
     <EditorField label={label}>
       <ImageUpload
+        typeCode={typeCode}
         size={100}
         value={asset.url}
         onChange={(url) => onChange(formatAsset(url, asset.width, asset.height))}

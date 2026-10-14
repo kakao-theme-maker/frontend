@@ -1,5 +1,7 @@
 // src/components/theme/customize/editor/StateImageGrid.tsx
 import ImageUpload from "@/components/common/ImageUpload";
+import { typeCodeOf } from "@/config/themeStyleMap";
+import type { SimpleThemeConfig } from "@/types/theme";
 
 interface StateImageColumn<K extends string> {
   key: K;
@@ -8,6 +10,7 @@ interface StateImageColumn<K extends string> {
 }
 
 interface StateImageGridProps<K extends string> {
+  section: keyof SimpleThemeConfig;
   columns: readonly StateImageColumn<K>[];
   values: Record<K, string>;
   onChange: (key: K, url: string) => void;
@@ -16,6 +19,7 @@ interface StateImageGridProps<K extends string> {
 
 // 항목별 안눌림/눌림 이미지를 한 번에 설정하는 그리드 컴포넌트
 export default function StateImageGrid<K extends string>({
+  section,
   columns,
   values,
   onChange,
@@ -50,6 +54,7 @@ export default function StateImageGrid<K extends string>({
             return (
               <ImageUpload
                 key={key}
+                typeCode={typeCodeOf(section, key)}
                 size={48}
                 value={values[key]}
                 onChange={(url) => onChange(key, url)}

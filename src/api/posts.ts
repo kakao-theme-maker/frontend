@@ -25,3 +25,9 @@ export const deletePostComment = (commentId: number) =>
 // 댓글 수정
 export const updatePostComment = (commentId: number, content: string) =>
   api.put<CommentResponse>(`/api/posts/comments/${commentId}`, { content }).then((r) => r.data)
+
+// 댓글 좋아요 / 취소
+export const likeComment = (commentId: number) =>
+  api.post<void>(`/api/comments/${commentId}/like`).then((r) => r.data)
+export const unlikeComment = (commentId: number) =>
+  api.delete<void>(`/api/comments/${commentId}/like`).then((r) => r.data)

@@ -17,7 +17,7 @@ import useMe from "@/hooks/useMe";
 import useRequireLogin from "@/hooks/useRequireLogin";
 import {
   useCreateComment, useDeleteComment, useThemeBoard, useThemeBoardComments,
-  useToggleBookmark, useToggleLike, useUpdateComment,
+  useToggleBookmark, useToggleCommentLike, useToggleLike, useUpdateComment,
 } from "@/hooks/useThemeBoards";
 import { useTheme } from "@/hooks/useThemes";
 import { formatDate, formatMonthDay } from "@/utils/format";
@@ -29,7 +29,7 @@ export default function Detail() {
   const isInvalidId = Number.isNaN(id);
 
   const { data: post, isLoading, isError } = useThemeBoard(isInvalidId ? undefined : id);
-  const { data: theme } = useTheme(post?.theme_component_id);
+  const { data: theme } = useTheme(post?.themeComponentId);
 
   const { data: me } = useMe();
   const requireLogin = useRequireLogin();
@@ -39,9 +39,11 @@ export default function Detail() {
   const createComment = useCreateComment(id);
   const deleteComment = useDeleteComment(id);
   const updateComment = useUpdateComment(id);
+  const toggleCommentLike = useToggleCommentLike(id);
 
   const [comment, setComment] = useState("");
-  // 팔로우 API가 아직 없어서 화면에서만 토글
+  // ⚠️ 팔로우 API(PUT/DELETE /api/users/{publicUserId}/follow)는 작성자의 publicUserId가 필요한데
+  // 게시글 응답에 없어서 아직 연결하지 못함 → 화면에서만 토글 (백엔드에 게시글 응답에 작성자 publicUserId 추가 요청 필요)
   const [followOverride, setFollowOverride] = useState<boolean | null>(null);
 
   if (!post) {
@@ -52,8 +54,8 @@ export default function Detail() {
     );
   }
 
-  const isFollowing = followOverride ?? post.following ?? false;
-  const isMyPost = me?.userEmail === post.user_email;
+  const isFollowing = followOverride ?? post.following;
+  const isMyPost = me?.userEmail === post.userEmail;
 
   // 댓글 등록 후 입력창 비우기
   const handleSubmitComment = () => {
@@ -64,16 +66,16 @@ export default function Detail() {
 
   return (
     <PageContainer>
-      {post.preview_image_url.length > 0 && <ThemePostPreview images={post.preview_image_url} />}
+      {post.previewImageUrl.length > 0 && <ThemePostPreview images={post.previewImageUrl} />}
 
       <PageTitle className="mt-8">{post.title}</PageTitle>
 
       <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar size="lg" src={post.profile_image || undefined} alt={post.user_name} />
+          <Avatar size="lg" src={post.profileImage || undefined} alt={post.userName} />
           <div>
-            <p className="font-bold">{post.user_name}</p>
-            <p className="text-sm text-slate-400">{formatMonthDay(post.created_at)}</p>
+            <p className="font-bold">{post.userName}</p>
+            <p className="text-sm text-slate-400">{formatMonthDay(post.createdAt)}</p>
           </div>
         </div>
 
@@ -94,8 +96,8 @@ export default function Detail() {
         <div className="mt-6 max-w-xs">
           <ThemeSelectCard
             title={theme.themeName}
-            date={formatDate(theme.createdAt)}
-            image={theme.previewImageUrl || defaultIcon}
+            date={formatDate(post.createdAt)}
+            image={post.previewImageUrl[0] || defaultIcon}
           />
         </div>
       )}
@@ -155,6 +157,11 @@ export default function Detail() {
             content={c.content}
             profileImage={c.profileImageUrl || undefined}
             isOwner={me?.userEmail === c.userEmail}
+            likeCount={c.likeCount}
+            liked={c.isLiked}
+            onToggleLike={() =>
+              requireLogin(() => toggleCommentLike.mutate({ commentId: c.commentId, liked: c.isLiked }))
+            }
             onEdit={(content) => updateComment.mutate({ commentId: c.commentId, content })}
             onDelete={() => deleteComment.mutate(c.commentId)}
           />

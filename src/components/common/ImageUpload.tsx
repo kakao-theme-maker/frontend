@@ -3,6 +3,8 @@ import { Loader2, Upload, X } from "lucide-react";
 import useImageUpload from "@/hooks/useImageUpload";
 
 interface ImageUploadProps {
+  // 이 이미지가 쓰일 슬롯(typeCode). 서버가 이미지 종류별로 이미지를 관리함
+  typeCode: string;
   value?: string | null;
   onChange: (url: string) => void;
   onRemove?: () => void;
@@ -12,6 +14,7 @@ interface ImageUploadProps {
 
 // 이미지 업로드 및 미리보기 컴포넌트
 export default function ImageUpload({
+  typeCode,
   value,
   onChange,
   onRemove,
@@ -19,7 +22,7 @@ export default function ImageUpload({
   size,
 }: ImageUploadProps) {
   const compact = size !== undefined && size <= 72;
-  const upload = useImageUpload();
+  const upload = useImageUpload(typeCode);
 
   // 선택한 파일을 서버에 업로드하고, 받은 이미지 URL을 전달
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +31,7 @@ export default function ImageUpload({
     if (!file) return;
 
     upload.mutate(file, {
-      onSuccess: (component) => onChange(component.image_url),
+      onSuccess: (component) => onChange(component.imageUrl),
       onError: () => window.alert("이미지 업로드에 실패했어요. 다시 시도해 주세요."),
     });
   };
