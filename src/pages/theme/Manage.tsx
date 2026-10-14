@@ -12,7 +12,7 @@ import ManageTabs from "@/components/manage/ManageTabs";
 import { THEME_SORT_OPTIONS } from "@/config/community";
 import useMyThemeBoards from "@/hooks/useMyBoards";
 import { useDeleteTheme, useMyThemes } from "@/hooks/useThemes";
-import { useDeletePost, useMyPreferredPosts, useMyUploadPosts } from "@/hooks/usemyPosts";
+import { useDeletePost, useMyPreferredPosts, useMyUploadPosts } from "@/hooks/useMyPosts";
 import ManageCard from "@/components/manage/ManageCard";
 
 const TABS = ["내 테마", "내가 좋아요한 테마", "내 게시글"] as const;
