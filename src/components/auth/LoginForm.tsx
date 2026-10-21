@@ -2,9 +2,9 @@
 import { isAxiosError } from "axios";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import AuthField from "@/components/auth/AuthField";
 import Button from "@/components/common/Button";
 import Checkbox from "@/components/common/Checkbox";
+import Field from "@/components/common/Field";
 import { AUTH_PATHS } from "@/config/auth";
 import useLogin from "@/hooks/useLogin";
 
@@ -35,7 +35,8 @@ export default function LoginForm() {
 
   return (
     <form aria-label="로그인" onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6">
-      <AuthField
+      <Field
+        bordered
         label="이메일"
         type="email"
         value={email}
@@ -46,7 +47,8 @@ export default function LoginForm() {
         required
       />
 
-      <AuthField
+      <Field
+        bordered
         label="비밀번호"
         type="password"
         value={password}

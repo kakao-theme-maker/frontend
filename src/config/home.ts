@@ -12,3 +12,11 @@ export const GUEST_THEMES_COUNT = 18;
 
 // 비로그인 홈의 "테마 만들러 가기"로 로그인한 뒤 이동할 주소
 export const CREATE_THEME_PATH = "/themes/new/customize";
+
+// 홈(로그인/비로그인 공통)의 "다른 사람들의 테마 둘러보기" 섹션 문구와 이동 주소
+export const OTHERS_THEMES_SECTION = {
+  title: "다른 사람들의 테마 둘러보기",
+  actionLabel: "더보기",
+  to: "/community",
+  emptyMessage: "아직 공개된 테마가 없어요.",
+} as const;

@@ -1,13 +1,11 @@
 // src/components/theme/customize/editor/PasscodeEditor.tsx
-import ColorChip from "@/components/common/ColorChip";
-import ImageUpload from "@/components/common/ImageUpload";
 import { CODE_IMAGE_COLUMNS } from "@/config/themeAssets";
-import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
-import EditorField from "./EditorField";
 import EditorSection from "./EditorSection";
 import FieldRow from "./FieldRow";
 import StateImageGrid from "./StateImageGrid";
+import ThemeColorChip from "./ThemeColorChip";
+import ThemeImageField from "./ThemeImageField";
 
 // 잠금화면(불릿, 배경, 키패드) 설정 에디터 컴포넌트
 export default function PasscodeEditor() {
@@ -16,11 +14,7 @@ export default function PasscodeEditor() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ColorChip
-        label="잠금화면 배경색"
-        hex={passcode.bgColor}
-        onChange={(color) => setPasscode({ bgColor: color })}
-      />
+      <ThemeColorChip section="passcode" field="bgColor" label="잠금화면 배경색" />
 
       <EditorSection title="잠금 화면 불릿">
         <p>각 칸을 눌러 이미지를 채우세요</p>
@@ -35,30 +29,14 @@ export default function PasscodeEditor() {
 
       <EditorSection title="배경">
         <FieldRow>
-          <EditorField label="배경 이미지">
-            <ImageUpload
-              typeCode={typeCodeOf("passcode", "bgImage")}
-              value={passcode.bgImage}
-              onChange={(url) => setPasscode({ bgImage: url })}
-              onRemove={() => setPasscode({ bgImage: "" })}
-              alt="잠금화면 배경 이미지"
-            />
-          </EditorField>
+          <ThemeImageField section="passcode" field="bgImage" label="배경 이미지" alt="잠금화면 배경 이미지" />
         </FieldRow>
       </EditorSection>
 
       <EditorSection title="키패드">
         <FieldRow>
-          <ColorChip
-            label="키패드 배경"
-            hex={passcode.keypadBGColor}
-            onChange={(color) => setPasscode({ keypadBGColor: color })}
-          />
-          <ColorChip
-            label="키패드 텍스트"
-            hex={passcode.keypadTextColor}
-            onChange={(color) => setPasscode({ keypadTextColor: color })}
-          />
+          <ThemeColorChip section="passcode" field="keypadBGColor" label="키패드 배경" />
+          <ThemeColorChip section="passcode" field="keypadTextColor" label="키패드 텍스트" />
         </FieldRow>
       </EditorSection>
     </div>

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Button from "@/components/common/Button";
 import { Plus } from "lucide-react";
-import CommunityThemeCard from "@/components/community/CommunityThemeCard";
+import BoardLinkCard from "@/components/community/BoardLinkCard";
 import { Link } from "react-router-dom";
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
@@ -72,13 +72,13 @@ export default function Community() {
       />
       <ThemeGrid>
         {boards.map((board) => (
-          <Link key={board.postId} to={`/community/${board.postId}`} className="block min-w-0">
-            <CommunityThemeCard
-              title={board.title}
-              likeCount={board.prefers}
-              image={board.previewImageUrl || undefined}
-            />
-          </Link>
+          <BoardLinkCard
+            key={board.postId}
+            postId={board.postId}
+            title={board.title}
+            likeCount={board.prefers}
+            image={board.previewImageUrl || undefined}
+          />
         ))}
       </ThemeGrid>
 

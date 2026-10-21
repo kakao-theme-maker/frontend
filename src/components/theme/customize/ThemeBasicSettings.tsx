@@ -1,16 +1,13 @@
 // src/components/theme/customize/ThemeBasicSettings.tsx
 import Card from "@/components/common/Card";
-import ColorChip from "@/components/common/ColorChip";
-import ImageUpload from "@/components/common/ImageUpload";
 import Input from "@/components/common/Input";
-import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
 import EditorField from "./editor/EditorField";
+import ThemeColorChip from "./editor/ThemeColorChip";
+import ThemeImageField from "./editor/ThemeImageField";
 
 // 테마 기본 설정 패널 컴포넌트
 export default function ThemeBasicSettings() {
-  const common = useThemeStore((state) => state.theme.common);
-  const setCommon = useThemeStore((state) => state.setCommon);
   const themeName = useThemeStore((state) => state.themeName);
   const setThemeName = useThemeStore((state) => state.setThemeName);
 
@@ -33,42 +30,13 @@ export default function ThemeBasicSettings() {
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        <EditorField label="테마 이미지">
-          <ImageUpload
-            typeCode={typeCodeOf("common", "mainBGImage")}
-            value={common.mainBGImage}
-            onChange={(url) => setCommon({ mainBGImage: url })}
-            onRemove={() => setCommon({ mainBGImage: "" })}
-            alt="테마 배경 이미지"
-          />
-        </EditorField>
-
-        <EditorField label="기본 프로필">
-          <ImageUpload
-            typeCode={typeCodeOf("common", "profileImage01")}
-            value={common.profileImage01}
-            onChange={(url) => setCommon({ profileImage01: url })}
-            onRemove={() => setCommon({ profileImage01: "" })}
-            alt="기본 프로필 이미지"
-          />
-        </EditorField>
+        <ThemeImageField section="common" field="mainBGImage" label="테마 이미지" alt="테마 배경 이미지" />
+        <ThemeImageField section="common" field="profileImage01" label="기본 프로필" alt="기본 프로필 이미지" />
 
         <div className="flex gap-4">
-          <ColorChip
-            label="메인 컬러"
-            hex={common.mainBGColor}
-            onChange={(color) => setCommon({ mainBGColor: color })}
-          />
-          <ColorChip
-            label="메인 텍스트"
-            hex={common.mainTextColor}
-            onChange={(color) => setCommon({ mainTextColor: color })}
-          />
-          <ColorChip
-            label="서브 텍스트"
-            hex={common.mainDescriptionColor}
-            onChange={(color) => setCommon({ mainDescriptionColor: color })}
-          />
+          <ThemeColorChip section="common" field="mainBGColor" label="메인 컬러" />
+          <ThemeColorChip section="common" field="mainTextColor" label="메인 텍스트" />
+          <ThemeColorChip section="common" field="mainDescriptionColor" label="서브 텍스트" />
         </div>
       </div>
     </Card>

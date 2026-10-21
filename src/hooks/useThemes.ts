@@ -1,21 +1,15 @@
 // src/hooks/useThemes.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Platform, Theme, ThemeDetailResponse } from "@/api/types";
+import type { Platform, ThemeDetailResponse } from "@/api/types";
 import {
   buildTheme, createTheme, deleteTheme, getTheme, getThemeBuild, getThemeDownload, getPublicThemes, getThemesByUser, updateTheme,
 } from "@/api/themes";
+import { MY_LIST_FETCH_SIZE } from "@/config/pagination";
 import { useThemeStore } from "@/store/customizeStore";
 import { useUploadedImageStore } from "@/store/uploadedImageStore";
+import { sortByLatest } from "@/utils/sort";
 import { toThemeUpdateRequest } from "@/utils/themeRequest";
 import useMe from "./useMe";
-
-// 테마 목록을 최신 생성일 순으로 정렬
-function sortByLatest(themes: Theme[]) {
-  return [...themes].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-}
-
-// 내 테마는 한 번에 넉넉히 받아 프론트에서 정렬/페이지 처리 (서버 기본 크기는 20개)
-const MY_THEMES_FETCH_SIZE = 100;
 
 // 내가 만든 테마 목록(최신순) 조회 훅
 export function useMyThemes() {
@@ -25,7 +19,7 @@ export function useMyThemes() {
   return useQuery({
     queryKey: ["themes", "user", publicUserId],
     // 내 테마 목록 요청
-    queryFn: () => getThemesByUser(publicUserId, { size: MY_THEMES_FETCH_SIZE }),
+    queryFn: () => getThemesByUser(publicUserId, { size: MY_LIST_FETCH_SIZE }),
     enabled: publicUserId !== "",
     select: sortByLatest,
   });

@@ -2,12 +2,12 @@
 import { Loader, Sliders } from "lucide-react";
 import PageContainer from "@/components/common/PageContainer";
 import QueryStatus from "@/components/common/QueryStatus";
-import ThemeGrid from "@/components/common/ThemeGrid";
 import GuestHome from "@/components/home/GuestHome";
 import ModeCard from "@/components/home/ModeCard";
-import SectionHeader from "@/components/home/SectionHeader";
+import HomeHeader from "@/components/home/HomeHeader";
 import ThemeCard from "@/components/home/ThemeCard";
-import { CREATE_THEME_PATH } from "@/config/home";
+import ThemeSection from "@/components/home/ThemeSection";
+import { CREATE_THEME_PATH, OTHERS_THEMES_SECTION } from "@/config/home";
 import useMe from "@/hooks/useMe";
 import { useAllThemes, useMyThemes } from "@/hooks/useThemes";
 
@@ -29,13 +29,11 @@ function MemberHome() {
 
   return (
     <PageContainer>
-      <header>
-        <h1 className="sr-only">komentum - 나만의 카카오톡 테마 만들기</h1>
-        <p className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-          {me ? `안녕하세요 ${me.name}님` : "안녕하세요"}
-        </p>
-        <p className="text-sm sm:text-base text-slate-400 pt-2 pb-5 sm:pt-3 sm:pb-6">오늘은 어떤 테마를 만들어 볼까요</p>
-      </header>
+      <HomeHeader
+        srTitle="komentum - 나만의 카카오톡 테마 만들기"
+        title={me ? `안녕하세요 ${me.name}님` : "안녕하세요"}
+        description="오늘은 어떤 테마를 만들어 볼까요"
+      />
 
       <section>
         <h2 className="sr-only">테마 생성 모드 선택</h2>
@@ -45,39 +43,34 @@ function MemberHome() {
         </div>
       </section>
 
-      <section>
-        <SectionHeader title="내가 최근에 만든 디자인" actionLabel="전체보기" to="/themes/manage" />
-        <QueryStatus
-          isLoading={myThemes.isLoading}
-          isError={myThemes.isError}
-          isEmpty={recentThemes.length === 0}
-          emptyMessage="아직 만든 테마가 없어요."
-        />
-        <ThemeGrid>
-          {recentThemes.map((theme) => (
-            <ThemeCard
-              key={theme.themeComponentId}
-              theme={theme}
-              to={`/themes/${theme.themeComponentId}/customize`}
-            />
-          ))}
-        </ThemeGrid>
-      </section>
+      <ThemeSection
+        title="내가 최근에 만든 디자인"
+        actionLabel="전체보기"
+        to="/themes/manage"
+        emptyMessage="아직 만든 테마가 없어요."
+        isLoading={myThemes.isLoading}
+        isError={myThemes.isError}
+        isEmpty={recentThemes.length === 0}
+      >
+        {recentThemes.map((theme) => (
+          <ThemeCard
+            key={theme.themeComponentId}
+            theme={theme}
+            to={`/themes/${theme.themeComponentId}/customize`}
+          />
+        ))}
+      </ThemeSection>
 
-      <section>
-        <SectionHeader title="다른 사람들의 테마 둘러보기" actionLabel="더보기" to="/community" />
-        <QueryStatus
-          isLoading={allThemes.isLoading}
-          isError={allThemes.isError}
-          isEmpty={otherThemes.length === 0}
-          emptyMessage="아직 공개된 테마가 없어요."
-        />
-        <ThemeGrid>
-          {otherThemes.map((theme) => (
-            <ThemeCard key={theme.themeComponentId} theme={theme} />
-          ))}
-        </ThemeGrid>
-      </section>
+      <ThemeSection
+        {...OTHERS_THEMES_SECTION}
+        isLoading={allThemes.isLoading}
+        isError={allThemes.isError}
+        isEmpty={otherThemes.length === 0}
+      >
+        {otherThemes.map((theme) => (
+          <ThemeCard key={theme.themeComponentId} theme={theme} />
+        ))}
+      </ThemeSection>
     </PageContainer>
   );
 }

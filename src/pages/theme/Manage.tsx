@@ -14,6 +14,8 @@ import useMyThemeBoards from "@/hooks/useMyBoards";
 import { useDeleteTheme, useMyThemes } from "@/hooks/useThemes";
 import { useDeletePost, useMyPreferredPosts, useMyUploadPosts } from "@/hooks/useMyPosts";
 import ManageCard from "@/components/manage/ManageCard";
+import { paginate } from "@/utils/paginate";
+import { sortByLatest } from "@/utils/sort";
 
 const TABS = ["내 테마", "내가 좋아요한 테마", "내 게시글"] as const;
 type Tab = (typeof TABS)[number];
@@ -100,12 +102,11 @@ export default function Manage() {
 
   // 정렬 (최신순 / 오래된순)
   const sorted = useMemo(() => {
-    const list = [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const list = sortByLatest(items);
     return sort === "최신순" ? list : list.reverse();
   }, [items, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const visible = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const { pageItems: visible, currentPage, totalPages } = paginate(sorted, page, PAGE_SIZE);
 
   const query = tab === "내 테마" ? myThemes : tab === "내 게시글" ? myPosts : preferredPosts;
 
@@ -161,7 +162,7 @@ export default function Manage() {
 
           {totalPages > 1 && (
             <div className="pt-8">
-              <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+              <Pagination page={currentPage} totalPages={totalPages} onChange={setPage} />
             </div>
           )}
         </div>

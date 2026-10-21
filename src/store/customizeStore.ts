@@ -111,6 +111,9 @@ export interface ThemeStore {
 
   setThemeName: (name: string) => void
 
+  // 섹션 이름으로 지정한 테마 섹션 하나를 부분 갱신
+  setSection: <K extends keyof SimpleThemeConfig>(section: K, style: Partial<SimpleThemeConfig[K]>) => void
+
   setCommon: (style: Partial<SimpleThemeConfig['common']>) => void
   setTabBar: (style: Partial<SimpleThemeConfig['tabBar']>) => void
   setChat: (style: Partial<SimpleThemeConfig['chat']>) => void
@@ -150,6 +153,9 @@ export const useThemeStore = create<ThemeStore>()(
 
       // 테마 이름 변경
       setThemeName: (name) => set({ themeName: name }),
+
+      // 섹션 이름으로 스타일 부분 갱신
+      setSection: (section, style) => set(updateSection(section, style)),
 
       // 공통 스타일 부분 갱신
       setCommon: (style) => set(updateSection('common', style)),

@@ -1,5 +1,4 @@
 // src/components/theme/customize/editor/BubbleSideEditor.tsx
-import ColorChip from "@/components/common/ColorChip";
 import Input from "@/components/common/Input";
 import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
@@ -7,6 +6,7 @@ import BubbleImageField from "./BubbleImageField";
 import EditorField from "./EditorField";
 import EditorSection from "./EditorSection";
 import FieldRow from "./FieldRow";
+import ThemeColorChip from "./ThemeColorChip";
 
 interface BubbleSideEditorProps {
   side: "receive" | "send";
@@ -39,11 +39,7 @@ export default function BubbleSideEditor({ side, title }: BubbleSideEditorProps)
           />
         ))}
 
-        <ColorChip
-          label="텍스트 색상"
-          hex={bubble[textColorKey]}
-          onChange={(color) => setBubble({ [textColorKey]: color })}
-        />
+        <ThemeColorChip section="bubble" field={textColorKey} label="텍스트 색상" />
       </FieldRow>
 
       <p className="mb-1.5 mt-4 text-sm text-field-label">여백 (padding)</p>

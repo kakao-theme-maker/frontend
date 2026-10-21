@@ -1,26 +1,17 @@
 // src/components/theme/customize/screen/ChatListScreenPreview.tsx
-import { MessageCirclePlusIcon, Search, Settings, Menu } from "lucide-react";
-import { useThemeStore } from "@/store/customizeStore";
+import { Menu } from "lucide-react";
 import PreviewAdBanner from "../preview/PreviewAdBanner";
 import PreviewButton from "../preview/PreviewButton";
 import PreviewChatRoomListItem from "../preview/PreviewChatRoomListItem";
+import PreviewHeader from "../preview/PreviewHeader";
 import PreviewNav from "../preview/PreviewNav";
 import PreviewScreenFrame from "../preview/PreviewScreenFrame";
 
 // 채팅목록 화면 프리뷰 컴포넌트
 export default function ChatListScreenPreview() {
-  const common = useThemeStore((state) => state.theme.common);
-
   return (
     <PreviewScreenFrame>
-      <header className="flex gap-2 items-center p-2" style={{ color: common.mainTextColor }}>
-        <span className="text-lg font-semibold">채팅</span>
-        <div className="ml-auto flex gap-3">
-          <Search size={16} />
-          <MessageCirclePlusIcon size={16} />
-          <Settings size={16} />
-        </div>
-      </header>
+      <PreviewHeader className="p-2" transparent />
       <section className="flex gap-1 p-1">
         <PreviewButton label="전체" />
         <PreviewButton label="안읽음" />

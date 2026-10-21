@@ -19,6 +19,7 @@ import { THEME_SORT_OPTIONS } from "@/config/community";
 import { useCreateThemeBoard } from "@/hooks/useThemeBoards";
 import { useMyThemes } from "@/hooks/useThemes";
 import { formatDate } from "@/utils/format";
+import { paginate } from "@/utils/paginate";
 
 const PAGE_SIZE = 5;
 
@@ -45,9 +46,7 @@ export default function Write() {
     theme.themeName.includes(keyword.trim()),
   );
   const sortedThemes = sort === THEME_SORT_OPTIONS[0] ? matchedThemes : [...matchedThemes].reverse();
-  const totalPages = Math.max(1, Math.ceil(sortedThemes.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageThemes = sortedThemes.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const { pageItems: pageThemes, currentPage, totalPages } = paginate(sortedThemes, page, PAGE_SIZE);
   const canSubmit =
     selectedThemeId !== null &&
     postInfo.title.trim() !== "" &&
