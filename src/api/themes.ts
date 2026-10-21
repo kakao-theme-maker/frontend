@@ -2,7 +2,7 @@
 import { api } from './client'
 import type {
   BuildId, PageParams, Platform, Theme, ThemeBuildCreateResponse, ThemeBuildStatus,
-  ThemeCloneRequest, ThemeDetailResponse, ThemeDownloadResponse, ThemeUpdateRequest,
+  ThemeDetailResponse, ThemeDownloadResponse, ThemeUpdateRequest,
 } from './types'
 
 // 공개된 테마 목록 조회
@@ -24,10 +24,6 @@ export const createTheme = () =>
 // 기존 테마 수정 (이름, 이미지, 색상 중 바꿀 항목만 전달)
 export const updateTheme = (themeId: number, body: ThemeUpdateRequest) =>
   api.put<void>(`/api/themes/${themeId}`, body).then((r) => r.data)
-
-// 테마 복제 (이미지/색상 정보를 기반으로 새 테마 생성)
-export const cloneTheme = (body: ThemeCloneRequest) =>
-  api.post<ThemeDetailResponse>('/api/themes/clone', body).then((r) => r.data)
 
 // 테마 패키지 빌드 시작 (플랫폼별)
 export const buildTheme = (themeId: number, platform: Platform) =>
