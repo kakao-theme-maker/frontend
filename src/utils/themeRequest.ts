@@ -5,6 +5,7 @@ import type {
 import { COLOR_STYLE_MAP, IMAGE_TYPE_MAP } from "@/config/themeStyleMap";
 import type { SimpleThemeConfig } from "@/types/theme";
 import { formatAsset, parseAsset, parseEdgeInsets } from "@/utils/bubbleStyle";
+import { joinHexAlpha, splitHexAlpha } from "@/utils/color";
 
 type Section = keyof SimpleThemeConfig;
 // 섹션별로 바뀐 값만 담은 테마 설정 (스토어에 덮어쓸 값)
@@ -15,14 +16,9 @@ function read(theme: SimpleThemeConfig, section: Section, key: string): string {
   return (theme[section] as unknown as Record<string, string>)[key] ?? "";
 }
 
-// 색상 문자열을 "#RRGGBB" 형태로 정리 (투명도 자리 8자리는 alpha로 따로 관리하므로 제외)
-function normalizeHex(color: string): string {
-  return `#${color.replace("#", "").slice(0, 6)}`;
-}
-
 // 스토어의 테마 설정을 서버 수정 요청 형태로 변환
 // uploadedIds: 이미지 URL -> designComponentId (업로드했거나 서버에서 받은 이미지)
-// base: 서버의 현재 테마 (말풍선 인셋만 바꾼 경우 기존 이미지 ID를 쓰고, 색상 투명도를 유지하기 위함)
+// base: 서버의 현재 테마 (말풍선 인셋만 바꾼 경우 기존 이미지 ID를 쓰기 위함)
 export function toThemeUpdateRequest(
   theme: SimpleThemeConfig,
   themeName: string,
@@ -33,7 +29,9 @@ export function toThemeUpdateRequest(
   for (const { section, key, styleCode } of COLOR_STYLE_MAP) {
     const color = read(theme, section, key);
     if (!color) continue;
-    styleCodes[styleCode] = { color: normalizeHex(color), alpha: base?.styleCodes[styleCode]?.alpha ?? 100 };
+    // 스토어 색상("#RRGGBB" 또는 "#RRGGBBAA")을 색상과 알파(0~100)로 나눠 보냄
+    const { hex, alpha } = splitHexAlpha(color);
+    styleCodes[styleCode] = { color: hex, alpha };
   }
 
   const typeCodes: Record<string, ThemeImageUpdateRequest> = {};
@@ -74,7 +72,8 @@ export function fromThemeDetail(detail: ThemeDetailResponse): {
 
   for (const { section, key, styleCode } of COLOR_STYLE_MAP) {
     const style = detail.styleCodes[styleCode];
-    if (style?.color) set(section, key, normalizeHex(style.color));
+    // 서버의 색상(#RRGGBB)과 알파(0~100)를 스토어의 한 값으로 합침
+    if (style?.color) set(section, key, joinHexAlpha(style.color, style.alpha ?? 100));
   }
 
   const imageIds: Record<string, number> = {};

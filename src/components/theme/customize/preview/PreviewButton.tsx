@@ -1,5 +1,6 @@
 // src/components/theme/customize/preview/PreviewButton.tsx
 import { useThemeStore } from "@/store/customizeStore";
+import { scaleAlpha } from "@/utils/color";
 
 type ButtonSize = "sm" | "md" | "lg";
 
@@ -29,7 +30,7 @@ export default function PreviewButton({
       style={{
         color: isSelected ? common.mainBGColor : common.mainTextColor,
         backgroundColor: isSelected ? common.mainTextColor : common.mainBGColor,
-        borderColor: `${common.mainTextColor}30`,
+        borderColor: scaleAlpha(common.mainTextColor, 0.19),
       }}>
       {label}
     </button>
