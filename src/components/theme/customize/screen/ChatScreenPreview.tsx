@@ -50,6 +50,18 @@ export default function ChatScreenPreview() {
                 </PreviewBubble>
               </div>
             </div>
+
+            <div className="flex justify-end">
+              <div className="flex flex-col items-end gap-1"
+                style={{ color: bubble.sendTextColor }}>
+                <PreviewBubble image={bubble.send01} edgeInsets={bubble.sendEdgeInsets}>
+                  내가 보낸
+                </PreviewBubble>
+                <PreviewBubble image={bubble.send02} edgeInsets={bubble.sendGroupEdgeInsets}>
+                  말풍선 미리보기
+                </PreviewBubble>
+              </div>
+            </div>
           </div>
         </div>
 
