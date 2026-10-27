@@ -114,18 +114,12 @@ export interface ThemeStore {
   // 섹션 이름으로 지정한 테마 섹션 하나를 부분 갱신
   setSection: <K extends keyof SimpleThemeConfig>(section: K, style: Partial<SimpleThemeConfig[K]>) => void
 
-  setCommon: (style: Partial<SimpleThemeConfig['common']>) => void
   setTabBar: (style: Partial<SimpleThemeConfig['tabBar']>) => void
-  setChat: (style: Partial<SimpleThemeConfig['chat']>) => void
-  setInput: (style: Partial<SimpleThemeConfig['input']>) => void
   setBubble: (style: Partial<SimpleThemeConfig['bubble']>) => void
   setPasscode: (style: Partial<SimpleThemeConfig['passcode']>) => void
-  setNotification: (style: Partial<SimpleThemeConfig['notification']>) => void
 
   // 서버에서 불러온 테마를 기본값 위에 덮어써서 반영 (이전에 열었던 테마의 값이 남지 않도록)
   applyServerTheme: (name: string, patch: ThemePatch) => void
-
-  resetAll: () => void
 }
 
 const DEFAULT_THEME: SimpleThemeConfig = {
@@ -157,17 +151,8 @@ export const useThemeStore = create<ThemeStore>()(
       // 섹션 이름으로 스타일 부분 갱신
       setSection: (section, style) => set(updateSection(section, style)),
 
-      // 공통 스타일 부분 갱신
-      setCommon: (style) => set(updateSection('common', style)),
-
       // 탭바 스타일 부분 갱신
       setTabBar: (style) => set(updateSection('tabBar', style)),
-
-      // 채팅방 스타일 부분 갱신
-      setChat: (style) => set(updateSection('chat', style)),
-
-      // 입력창 스타일 부분 갱신
-      setInput: (style) => set(updateSection('input', style)),
 
       // 말풍선 스타일 부분 갱신
       setBubble: (style) => set(updateSection('bubble', style)),
@@ -175,10 +160,6 @@ export const useThemeStore = create<ThemeStore>()(
       // 잠금화면 스타일 부분 갱신
       setPasscode: (style) => set(updateSection('passcode', style)),
 
-      // 알림 스타일 부분 갱신
-      setNotification: (style) => set(updateSection('notification', style)),
-
-      // 테마 전체를 기본값으로 초기화
       // 서버에서 불러온 테마를 기본값 위에 덮어써서 반영
       applyServerTheme: (name, patch) =>
         set(() => {
@@ -188,8 +169,6 @@ export const useThemeStore = create<ThemeStore>()(
           }
           return { theme: theme as unknown as SimpleThemeConfig, themeName: name }
         }),
-
-      resetAll: () => set({ theme: { ...DEFAULT_THEME }, themeName: '' }),
     }),
     {
       name: 'theme-store',

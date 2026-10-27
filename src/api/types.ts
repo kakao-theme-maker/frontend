@@ -7,9 +7,6 @@ export interface PageParams {
   sort?: string[]
 }
 
-export interface LocalLoginRequest { email: string; password: string }
-export interface UserAuthResponse { accessToken: string; refreshToken: string }
-
 // 내 정보 (GET /api/users/me, 스웨거 UserResponseDto - camelCase)
 export interface UserResponse {
   userEmail: string
@@ -133,12 +130,6 @@ export interface ThemeUpdateRequest {
   themeName?: string
   typeCodes?: Record<string, ThemeImageUpdateRequest>
   styleCodes?: Record<string, ThemeStyleUpdateRequest>
-}
-
-// 테마 복제 요청 (POST /api/themes/clone) - platformScope=common 항목을 반드시 포함해야 함
-export interface ThemeCloneRequest extends ThemeUpdateRequest {
-  typeCodes: Record<string, ThemeImageUpdateRequest>
-  styleCodes: Record<string, ThemeStyleUpdateRequest>
 }
 
 // 테마 빌드 (POST /api/themes/{id}/builds, GET /api/theme-builds/{buildId})
