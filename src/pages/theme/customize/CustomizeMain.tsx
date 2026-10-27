@@ -10,10 +10,9 @@ import Button from "@/components/common/Button";
 import ThemeBasicSettings from "@/components/theme/customize/ThemeBasicSettings";
 import ThemePreview from "@/components/theme/customize/ThemePreview";
 import PreviewFrame from "@/components/theme/customize/PreviewFrame";
-import type { TabKey } from "@/types/customize";
 import CustomizeTabs from "@/components/theme/customize/CustomizeTabs";
 import TabStrip from "@/components/theme/customize/TabStrip";
-import { TABS, EDITOR_MAP, SCREEN_MAP } from "@/config/customizeTabs";
+import { TABS, getTab, type TabKey } from "@/config/customizeTabs";
 import BottomSheet from "@/components/bottomsheet/BottomSheet";
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
@@ -49,8 +48,7 @@ export default function CustomizeMain() {
     applyServerTheme(name, patch);
   }, [loadedTheme, applyServerTheme]);
 
-  const ActiveEditor = EDITOR_MAP[activeTab];
-  const activeLabel = TABS.find((tab) => tab.key === activeTab)?.label ?? "";
+  const { Editor: ActiveEditor, label: activeLabel } = getTab(activeTab);
 
   // 모바일에서 탭 선택 시 바텀시트 열기
   const handleSelectTabMobile = (tab: TabKey) => {
@@ -162,19 +160,12 @@ export default function CustomizeMain() {
           전체 화면 미리보기
         </SectionTitle>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
-          {TABS.map((tab) => {
-            const ScreenPreview = SCREEN_MAP[tab.key];
-
-            return (
-              <div
-                key={tab.key}
-                className="min-w-0  bg-white p-3"
-              >
-                <h3 className="mb-2 text-xs font-semibold truncate">{tab.label}</h3>
-                <PreviewFrame Screen={ScreenPreview} />
-              </div>
-            );
-          })}
+          {TABS.map(({ key, label, Screen }) => (
+            <div key={key} className="min-w-0  bg-white p-3">
+              <h3 className="mb-2 text-xs font-semibold truncate">{label}</h3>
+              <PreviewFrame Screen={Screen} />
+            </div>
+          ))}
         </div>
       </div>
     </PageContainer>

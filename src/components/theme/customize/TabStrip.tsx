@@ -1,6 +1,5 @@
 // src/components/theme/customize/TabStrip.tsx
-import { TABS } from "@/config/customizeTabs";
-import type { TabKey } from "@/types/customize";
+import { TABS, type TabKey } from "@/config/customizeTabs";
 
 interface TabStripProps {
   activeTab: TabKey;
