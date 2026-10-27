@@ -60,7 +60,7 @@ export function useTheme(themeId?: number) {
 }
 
 const BUILD_POLL_INTERVAL = 2000;
-const BUILD_POLL_MAX = 30;
+const BUILD_POLL_MAX = 90;
 
 // 지정한 시간(ms)만큼 대기
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

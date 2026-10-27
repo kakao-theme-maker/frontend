@@ -19,6 +19,11 @@ export function parseEdgeInsets(insets: string) {
   return { top, right, bottom, left };
 }
 
+// 여백 값을 "top left bottom right" 형태의 문자열로 변환
+export function formatEdgeInsets({ top, left, bottom, right }: { top: number; left: number; bottom: number; right: number }) {
+  return `${top}px ${left}px ${bottom}px ${right}px`;
+}
+
 // 말풍선 border-image 스타일 값 계산
 export function getBubbleStyle(backgroundImage: string, titleEdgeInsets: string) {
   const { url, width: capY, height: capX } = parseAsset(backgroundImage);

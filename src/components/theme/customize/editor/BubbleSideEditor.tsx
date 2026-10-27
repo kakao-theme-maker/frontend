@@ -1,9 +1,7 @@
 // src/components/theme/customize/editor/BubbleSideEditor.tsx
-import Input from "@/components/common/Input";
 import { typeCodeOf } from "@/config/themeStyleMap";
 import { useThemeStore } from "@/store/customizeStore";
 import BubbleImageField from "./BubbleImageField";
-import EditorField from "./EditorField";
 import EditorSection from "./EditorSection";
 import FieldRow from "./FieldRow";
 import ThemeColorChip from "./ThemeColorChip";
@@ -18,42 +16,30 @@ export default function BubbleSideEditor({ side, title }: BubbleSideEditorProps)
   const bubble = useThemeStore((state) => state.theme.bubble);
   const setBubble = useThemeStore((state) => state.setBubble);
 
-  const imageKeys = [`${side}01`, `${side}02`] as const;
-  const textColorKey = `${side}TextColor` as const;
-  const edgeInsetsFields = [
-    { key: `${side}EdgeInsets`, label: "개별 말풍선" },
-    { key: `${side}GroupEdgeInsets`, label: "연속 그룹 말풍선" },
+  // 이미지 1은 개별 말풍선, 이미지 2는 연속 그룹 말풍선 (각각 자기 여백 값을 가짐)
+  const imageFields = [
+    { imageKey: `${side}01`, insetsKey: `${side}EdgeInsets`, name: "개별 말풍선" },
+    { imageKey: `${side}02`, insetsKey: `${side}GroupEdgeInsets`, name: "연속 그룹 말풍선" },
   ] as const;
+  const textColorKey = `${side}TextColor` as const;
 
   return (
     <EditorSection title={title}>
       <FieldRow>
-        {imageKeys.map((key, index) => (
+        {imageFields.map(({ imageKey, insetsKey, name }, index) => (
           <BubbleImageField
-            key={key}
-            typeCode={typeCodeOf("bubble", key)}
-            label={`배경 이미지 ${index + 1}`}
+            key={imageKey}
+            typeCode={typeCodeOf("bubble", imageKey)}
+            label={`배경 이미지 ${index + 1} (${name})`}
             alt={`${title} 배경 이미지 ${index + 1}`}
-            value={bubble[key]}
-            onChange={(value) => setBubble({ [key]: value })}
+            value={bubble[imageKey]}
+            onChange={(value) => setBubble({ [imageKey]: value })}
+            insets={bubble[insetsKey]}
+            onInsetsChange={(value) => setBubble({ [insetsKey]: value })}
           />
         ))}
 
         <ThemeColorChip section="bubble" field={textColorKey} label="텍스트 색상" />
-      </FieldRow>
-
-      <p className="mb-1.5 mt-4 text-sm text-field-label">여백 (padding)</p>
-      <FieldRow>
-        {edgeInsetsFields.map((field) => (
-          <EditorField key={field.key} label={field.label} hint>
-            <Input
-              type="text"
-              variant="dashed"
-              value={bubble[field.key]}
-              onChange={(e) => setBubble({ [field.key]: e.target.value })}
-            />
-          </EditorField>
-        ))}
       </FieldRow>
     </EditorSection>
   );
