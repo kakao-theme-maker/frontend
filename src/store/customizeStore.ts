@@ -7,6 +7,7 @@ import type { ThemePatch } from '@/utils/themeRequest'
 import defaultIcon from '@/assets/images/commonIcoTheme.png'
 import defaultMainBGImage from '@/assets/images/mainBgImage.png'
 import defaultProfileImage01 from '@/assets/images/profileImg01.png'
+import defaultAddFriendImage from '@/assets/images/findBtnAddFriend.png'
 import defaultTabBgImage from '@/assets/images/maintabBgImage.png'
 import defaultTabFriends from '@/assets/images/maintabIcoFriends.png'
 import defaultTabFriendsSelected from '@/assets/images/maintabIcoFriendsSelected.png'
@@ -41,9 +42,27 @@ const DEFAULT_COMMON: SimpleThemeConfig['common'] = {
   mainBGImage: defaultMainBGImage,
   mainDescriptionColor: '#805959',
   profileImage01: defaultProfileImage01,
+  mainHighlightedTextColor: '#4D3030',
+  mainDescriptionHighlightedColor: '#664242',
+  mainNormalBGColor: '#FFDEDE',
+  mainSelectedBGColor: '#FCC5C5',
+  featureTextColor: '#E86464',
+}
+
+const DEFAULT_FRIENDS: SimpleThemeConfig['friends'] = {
+  headerTextColor: '#664242',
+  sectionTitleTextColor: '#805959',
+  sectionTitleBorderColor: '#F2C9C9',
+  addFriendImage: defaultAddFriendImage,
+}
+
+const DEFAULT_CHAT_LIST: SimpleThemeConfig['chatList'] = {
+  paragraphTextColor: '#805959',
+  paragraphHighlightedTextColor: '#664242',
 }
 
 const DEFAULT_TAB_BAR: SimpleThemeConfig['tabBar'] = {
+  bgColor: '#FFFFFF',
   bgImage: defaultTabBgImage,
   friends: defaultTabFriends,
   friendsSelected: defaultTabFriendsSelected,
@@ -87,6 +106,7 @@ const DEFAULT_BUBBLE: SimpleThemeConfig['bubble'] = {
 
 const DEFAULT_PASSCODE: SimpleThemeConfig['passcode'] = {
   bgColor: '#FFDEDE',
+  titleTextColor: '#664242',
   bgImage: defaultPasscodeBgImage,
   codeImage01: defaultCodeImage01,
   codeImage02: defaultCodeImage02,
@@ -103,6 +123,7 @@ const DEFAULT_PASSCODE: SimpleThemeConfig['passcode'] = {
 
 const DEFAULT_NOTIFICATION: SimpleThemeConfig['notification'] = {
   bgColor: '#FCC5C5',
+  messageTextColor: '#664242',
 }
 
 export interface ThemeStore {
@@ -124,6 +145,8 @@ export interface ThemeStore {
 
 const DEFAULT_THEME: SimpleThemeConfig = {
   common: DEFAULT_COMMON,
+  friends: DEFAULT_FRIENDS,
+  chatList: DEFAULT_CHAT_LIST,
   tabBar: DEFAULT_TAB_BAR,
   chat: DEFAULT_CHAT,
   input: DEFAULT_INPUT,
@@ -131,6 +154,19 @@ const DEFAULT_THEME: SimpleThemeConfig = {
   passcode: DEFAULT_PASSCODE,
   notification: DEFAULT_NOTIFICATION,
 }
+
+// 저장된(localStorage) 테마에 없는 항목은 기본값으로 채움 (새 항목이 추가되기 전에 저장된 값 대응)
+const mergeWithDefaults = (saved?: Partial<SimpleThemeConfig>): SimpleThemeConfig => ({
+  common: { ...DEFAULT_THEME.common, ...saved?.common },
+  friends: { ...DEFAULT_THEME.friends, ...saved?.friends },
+  chatList: { ...DEFAULT_THEME.chatList, ...saved?.chatList },
+  tabBar: { ...DEFAULT_THEME.tabBar, ...saved?.tabBar },
+  chat: { ...DEFAULT_THEME.chat, ...saved?.chat },
+  input: { ...DEFAULT_THEME.input, ...saved?.input },
+  bubble: { ...DEFAULT_THEME.bubble, ...saved?.bubble },
+  passcode: { ...DEFAULT_THEME.passcode, ...saved?.passcode },
+  notification: { ...DEFAULT_THEME.notification, ...saved?.notification },
+})
 
 // 테마의 한 섹션만 부분 갱신하는 상태 업데이터 생성
 const updateSection =
@@ -172,6 +208,10 @@ export const useThemeStore = create<ThemeStore>()(
     }),
     {
       name: 'theme-store',
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<ThemeStore> | undefined
+        return { ...current, ...saved, theme: mergeWithDefaults(saved?.theme) }
+      },
     }
   )
 )

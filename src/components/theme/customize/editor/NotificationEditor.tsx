@@ -10,6 +10,7 @@ export default function NotificationEditor() {
       <EditorSection title="배너">
         <FieldRow>
           <ThemeColorChip section="notification" field="bgColor" label="알림 배너 배경색" />
+          <ThemeColorChip section="notification" field="messageTextColor" label="알림 배너 텍스트" />
         </FieldRow>
       </EditorSection>
     </div>

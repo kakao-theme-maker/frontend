@@ -14,7 +14,10 @@ export default function PasscodeEditor() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ThemeColorChip section="passcode" field="bgColor" label="잠금화면 배경색" />
+      <FieldRow>
+        <ThemeColorChip section="passcode" field="bgColor" label="잠금화면 배경색" />
+        <ThemeColorChip section="passcode" field="titleTextColor" label="타이틀 텍스트" />
+      </FieldRow>
 
       <EditorSection title="잠금 화면 불릿">
         <p>각 칸을 눌러 이미지를 채우세요</p>

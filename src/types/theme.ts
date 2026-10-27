@@ -7,9 +7,28 @@ export interface SimpleThemeConfig {
     mainBGImage: string;
     mainDescriptionColor: string;
     profileImage01: string;
+    // 친구·채팅목록 화면이 함께 쓰는 값
+    mainHighlightedTextColor: string;
+    mainDescriptionHighlightedColor: string;
+    mainNormalBGColor: string;
+    mainSelectedBGColor: string;
+    featureTextColor: string;
+  };
+
+  friends: {
+    headerTextColor: string;
+    sectionTitleTextColor: string;
+    sectionTitleBorderColor: string;
+    addFriendImage: string;
+  };
+
+  chatList: {
+    paragraphTextColor: string;
+    paragraphHighlightedTextColor: string;
   };
 
   tabBar: {
+    bgColor: string;
     bgImage: string;
     friends: string;
     friendsSelected: string;
@@ -53,6 +72,7 @@ export interface SimpleThemeConfig {
 
   passcode: {
     bgColor: string;
+    titleTextColor: string;
     bgImage: string;
     codeImage01: string;
     codeImage02: string;
@@ -69,5 +89,6 @@ export interface SimpleThemeConfig {
 
   notification: {
     bgColor: string;
+    messageTextColor: string;
   };
 }

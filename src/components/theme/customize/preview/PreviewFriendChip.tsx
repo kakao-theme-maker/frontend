@@ -14,6 +14,7 @@ export default function PreviewFriendChip({
   label,
   variant = "full",
   description,
+  isSelected = false,
 }: FriendChipProps) {
   const theme = useThemeStore(
     (state) => state.theme
@@ -43,14 +44,18 @@ export default function PreviewFriendChip({
       )}
 
       {variant === "full" && (
-        <div className="flex w-full gap-2 items-center p-1">
+        <div
+          className="flex w-full gap-2 items-center p-1 rounded-lg"
+          style={{ backgroundColor: isSelected ? theme.common.mainSelectedBGColor : theme.common.mainNormalBGColor }}
+        >
           <img
             src={theme.common.profileImage01}
             className="w-8 h-8 rounded-xl"
           />
           <div className="flex-1 flex flex-col">
             <span style={{ color: theme.common.mainTextColor }}>{label}</span>
-            <span style={{ color: theme.common.mainDescriptionColor }}
+            <span
+              style={{ color: isSelected ? theme.common.mainDescriptionHighlightedColor : theme.common.mainDescriptionColor }}
               className="text-[10px]">{description}</span>
           </div>
 

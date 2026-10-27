@@ -8,7 +8,6 @@ const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
 
 // 잠금화면 프리뷰 컴포넌트
 export default function PasscodeScreenPreview() {
-  const common = useThemeStore((state) => state.theme.common);
   const passcode = useThemeStore((state) => state.theme.passcode);
 
   return (
@@ -21,7 +20,7 @@ export default function PasscodeScreenPreview() {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          color: common.mainTextColor,
+          color: passcode.titleTextColor,
         }}
       >
         <p className="text-xl">비밀번호</p>

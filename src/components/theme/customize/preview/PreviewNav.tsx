@@ -15,7 +15,7 @@ export default function PreviewNav({ selectedTab }: INavPreviewProps) {
       <div
         className="relative w-full h-14 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundColor: "white",
+          backgroundColor: tabBar.bgColor,
           backgroundImage: `url(${tabBar.bgImage})`,
         }}
       >

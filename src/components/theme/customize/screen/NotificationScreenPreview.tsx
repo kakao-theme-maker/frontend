@@ -16,10 +16,10 @@ export default function NotificationScreenPreview() {
       >
         <img src={common.profileImage01} className="w-7 h-7 rounded-xl shadow-sm" />
         <div className="flex flex-col justify-center gap-1 leading-none">
-          <span className="text-[10px]" style={{ color: common.mainTextColor }}>
+          <span className="text-[10px]" style={{ color: notification.messageTextColor }}>
             어피치
           </span>
-          <span className="text-[10px]" style={{ color: common.mainDescriptionColor }}>
+          <span className="text-[10px]" style={{ color: notification.messageTextColor }}>
             ㅋㅋㅋㅋㅋㅋㅋㅋ
           </span>
         </div>
