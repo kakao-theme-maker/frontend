@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Avatar from "@/components/common/Avatar";
+import { kakaoLogin } from "@/config/auth";
 import useMe from "@/hooks/useMe";
 import logo from "@/assets/logo.svg";
 import NavButton from "./NavButton";
@@ -32,8 +33,6 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
 
   const items = me ? NAV_ITEMS : GUEST_NAV_ITEMS;
-  // 로그인 후 지금 보던 페이지로 돌아오도록 현재 주소를 전달 (로그인 페이지에서는 제외)
-  const loginState = pathname === "/login" ? undefined : { from: pathname + search };
 
   // 페이지가 바뀌면 모바일 메뉴 닫기
   useEffect(() => {
@@ -74,13 +73,13 @@ export default function Nav() {
             </>
           ) : (
             !isLoading && (
-              <Link
-                to="/login"
-                state={loginState}
+              <button
+                type="button"
+                onClick={() => kakaoLogin(pathname + search)}
                 className="whitespace-nowrap text-sm text-muted transition-colors hover:text-primary sm:text-base"
               >
                 로그인
-              </Link>
+              </button>
             )
           )}
         </div>
