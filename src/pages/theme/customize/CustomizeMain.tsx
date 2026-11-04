@@ -1,5 +1,6 @@
 // src/pages/theme/customize/CustomizeMain.tsx
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Platform } from "@/api/types";
 import { useDownloadTheme, useSaveTheme, useTheme } from "@/hooks/useThemes";
@@ -18,6 +19,26 @@ import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import SectionTitle from "@/components/common/SectionTitle";
 import useMediaQuery from "@/hooks/useMediaQuery";
+
+// 테마 저장 실패 원인별 안내 문구 (서버는 실패 시 전체 수정을 롤백함)
+function saveErrorMessage(error: unknown): string {
+  const status = isAxiosError(error) ? error.response?.status : undefined;
+  if (status === 400) return "저장하지 못했어요. 이미지가 PNG인지, 말풍선 여백 값이 올바른지 확인해 주세요.";
+  if (status === 404) return "저장하지 못했어요. 알 수 없는 이미지 종류가 포함되어 있어요.";
+  return "테마 저장에 실패했어요. 다시 시도해 주세요.";
+}
+
+// 빌드·다운로드 실패 원인별 안내 문구 (빌드 시작·상태 조회는 소유자 또는 관리자만 가능)
+function downloadErrorMessage(error: unknown): string {
+  if (isAxiosError(error)) {
+    const status = error.response?.status;
+    if (status === 401) return "로그인이 필요해요. 다시 로그인해 주세요.";
+    if (status === 403) return "이 테마를 빌드할 권한이 없어요.";
+    if (status === 404) return "테마 또는 빌드 결과를 찾지 못했어요.";
+    return "다운로드에 실패했어요. 잠시 후 다시 시도해 주세요.";
+  }
+  return error instanceof Error ? error.message : "다운로드에 실패했어요.";
+}
 
 // 테마 만들기 간편모드 메인 페이지
 export default function CustomizeMain() {
@@ -67,8 +88,8 @@ export default function CustomizeMain() {
       const savedId = await saveTheme.mutateAsync({ themeId, themeName: name });
       if (themeId === undefined) navigate(`/themes/${savedId}/customize`, { replace: true });
       return savedId;
-    } catch {
-      setMessage("테마 저장에 실패했어요. 다시 시도해 주세요.");
+    } catch (error) {
+      setMessage(saveErrorMessage(error));
       return null;
     }
   };
@@ -88,7 +109,7 @@ export default function CustomizeMain() {
       const url = await downloadTheme.mutateAsync({ themeId: savedId, platform });
       window.location.assign(url);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "다운로드에 실패했어요.");
+      setMessage(downloadErrorMessage(error));
     }
   };
 

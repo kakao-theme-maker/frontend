@@ -1,4 +1,5 @@
 // src/pages/theme/Manage.tsx
+import { isAxiosError } from "axios";
 import { useMemo, useState } from "react";
 import defaultThemeIcon from "@/assets/images/commonIcoTheme.png";
 import defaultBoardImage from "@/assets/images/mainBgImage.png";
@@ -62,7 +63,12 @@ export default function Manage() {
   const handleDeleteTheme = (themeId: number) => {
     if (!window.confirm("이 테마를 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
     deleteTheme.mutate(themeId, {
-      onError: () => window.alert("테마 삭제에 실패했어요. 게시글로 공유 중인 테마라면 게시글을 먼저 삭제해 주세요."),
+      onError: (error) =>
+        window.alert(
+          isAxiosError(error) && error.response?.status === 403
+            ? "이 테마를 삭제할 권한이 없어요. 내가 만든 테마만 삭제할 수 있어요."
+            : "테마 삭제에 실패했어요. 게시글로 공유 중인 테마라면 게시글을 먼저 삭제해 주세요.",
+        ),
     });
   };
 

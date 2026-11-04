@@ -74,6 +74,7 @@ export function useSaveTheme() {
     mutationFn: async ({ themeId, themeName }: { themeId?: number; themeName: string }) => {
       let id = themeId;
       let base: ThemeDetailResponse;
+      const isNewTheme = id === undefined;
 
       if (id === undefined) {
         // 새 테마: 기본 이미지·색상이 채워진 테마를 먼저 만든 뒤, 편집한 내용을 덮어씀
@@ -93,8 +94,14 @@ export function useSaveTheme() {
         { files: pending.files, removed: pending.removed },
         base,
       );
-      // 서버가 검증·저장에 실패하면 전체를 롤백하므로, 성공했을 때만 보관 중인 이미지 변경분을 비움
-      await updateTheme(id, body, pending.files);
+      try {
+        // 서버가 검증·저장에 실패하면 수정 내용 전체를 롤백하므로, 성공했을 때만 보관 중인 이미지 변경분을 비움
+        await updateTheme(id, body, pending.files);
+      } catch (error) {
+        // 롤백 대상은 수정 요청뿐이라, 방금 새로 만든 테마는 서버에 남음 -> 재시도 때 빈 테마가 쌓이지 않게 정리
+        if (isNewTheme) await deleteTheme(id).catch(() => undefined);
+        throw error;
+      }
       usePendingImageStore.getState().clear();
       return id;
     },
@@ -104,6 +111,9 @@ export function useSaveTheme() {
 }
 
 // 테마 빌드 후 다운로드 URL을 반환하는 훅 (빌드 완료까지 상태 폴링)
+// - 빌드 상태 응답의 downloadUrl은 항상 null이므로 SUCCESS 확인 뒤 download API로 따로 발급받음
+// - download API는 "최신 성공 빌드"의 URL을 주므로 반드시 이번 빌드가 SUCCESS인 것을 확인한 뒤 호출
+// - 링크는 발급 후 48시간만 유효하므로 저장·캐시하지 않고 다운로드할 때마다 새로 발급
 export function useDownloadTheme() {
   return useMutation({
     mutationFn: async ({ themeId, platform }: { themeId: number; platform: Platform }) => {
@@ -113,6 +123,7 @@ export function useDownloadTheme() {
         const build = await getThemeBuild(buildId);
         if (build.status === "SUCCESS") {
           const { downloadUrl } = await getThemeDownload(themeId, platform);
+          if (!downloadUrl) throw new Error("다운로드 주소를 받지 못했어요. 다시 시도해 주세요.");
           return downloadUrl;
         }
         if (build.status === "FAILED") throw new Error("테마 빌드에 실패했어요.");
