@@ -143,9 +143,9 @@ export interface ThemeBuildCreateResponse {
   platform: Platform
   status: BuildStatus
 }
+// downloadUrl은 성공해도 null이므로 GET /api/themes/{id}/download 로 따로 받아야 함
 export interface ThemeBuildStatus {
   status: BuildStatus
-  downloadUrl?: string
 }
 export interface ThemeDownloadResponse {
   downloadUrl: string
