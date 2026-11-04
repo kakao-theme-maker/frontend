@@ -130,6 +130,8 @@ export interface ThemeUpdateRequest {
   themeName?: string
   typeCodes?: Record<string, ThemeImageUpdateRequest>
   styleCodes?: Record<string, ThemeStyleUpdateRequest>
+  // 이미지 연결을 제거할 typeCode 목록 (같은 typeCode로 파일을 함께 보내면 400)
+  deleteTypeCodes?: string[]
 }
 
 // 테마 빌드 (POST /api/themes/{id}/builds, GET /api/theme-builds/{buildId})
