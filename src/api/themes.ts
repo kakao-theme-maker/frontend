@@ -1,5 +1,5 @@
 // src/api/themes.ts
-import { api } from './client'
+import { api, buildMultipartForm } from './client'
 import type {
   BuildId, PageParams, Platform, Theme, ThemeBuildCreateResponse, ThemeBuildStatus,
   ThemeDetailResponse, ThemeDownloadResponse, ThemeUpdateRequest,
@@ -21,9 +21,10 @@ export const getTheme = (themeId: number) =>
 export const createTheme = () =>
   api.post<ThemeDetailResponse>('/api/themes').then((r) => r.data)
 
-// 기존 테마 수정 (이름, 이미지, 색상 중 바꿀 항목만 전달)
-export const updateTheme = (themeId: number, body: ThemeUpdateRequest) =>
-  api.put<void>(`/api/themes/${themeId}`, body).then((r) => r.data)
+// 기존 테마 수정 (multipart: request JSON + typeCode 이름의 이미지 파일들, 바꿀 항목만 전달)
+// files: typeCode -> PNG 파일. 보내지 않은 typeCode의 이미지는 서버에서 그대로 유지됨
+export const updateTheme = (themeId: number, body: ThemeUpdateRequest, files: Record<string, File> = {}) =>
+  api.put<void>(`/api/themes/${themeId}`, buildMultipartForm(body, files)).then((r) => r.data)
 
 // 테마 패키지 빌드 시작 (플랫폼별)
 export const buildTheme = (themeId: number, platform: Platform) =>

@@ -49,3 +49,11 @@ export function buildFormData(
   if (file?.value) fd.append(file.key, file.value)
   return fd
 }
+
+// 테마 수정용 multipart FormData 생성 (request: JSON part, typeCode 이름: 이미지 파일 part)
+export function buildMultipartForm(json: unknown, files: Record<string, File> = {}): FormData {
+  const fd = new FormData()
+  fd.append('request', new Blob([JSON.stringify(json)], { type: 'application/json' }))
+  for (const [typeCode, file] of Object.entries(files)) fd.append(typeCode, file)
+  return fd
+}

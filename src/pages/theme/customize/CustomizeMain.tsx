@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Platform } from "@/api/types";
 import { useDownloadTheme, useSaveTheme, useTheme } from "@/hooks/useThemes";
 import { useThemeStore } from "@/store/customizeStore";
-import { useUploadedImageStore } from "@/store/uploadedImageStore";
+import { usePendingImageStore } from "@/store/pendingImageStore";
 import { fromThemeDetail } from "@/utils/themeRequest";
 import Button from "@/components/common/Button";
 import ThemeBasicSettings from "@/components/theme/customize/ThemeBasicSettings";
@@ -42,9 +42,9 @@ export default function CustomizeMain() {
   // 저장된 테마를 열면 서버의 이름·색상·이미지를 에디터에 반영
   useEffect(() => {
     if (!loadedTheme) return;
-    const { themeName: name, patch, imageIds } = fromThemeDetail(loadedTheme);
-    // 서버 이미지의 ID를 기억해 두면 저장할 때 이미지 정보로 다시 보낼 수 있음
-    useUploadedImageStore.getState().registerMany(imageIds);
+    const { themeName: name, patch } = fromThemeDetail(loadedTheme);
+    // 서버 값으로 에디터를 덮어쓰므로 저장 전 이미지 변경분도 함께 비움
+    usePendingImageStore.getState().clear();
     applyServerTheme(name, patch);
   }, [loadedTheme, applyServerTheme]);
 

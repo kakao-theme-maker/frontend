@@ -156,16 +156,22 @@ const DEFAULT_THEME: SimpleThemeConfig = {
 }
 
 // 저장된(localStorage) 테마에 없는 항목은 기본값으로 채움 (새 항목이 추가되기 전에 저장된 값 대응)
+// 새로고침하면 blob: 미리보기 URL(과 아직 저장 전인 File)은 사라지므로, 저장된 값에서 blob URL 항목은 제외
+const withoutBlobUrls = <T extends object>(section?: T): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(section ?? {}).filter(([, v]) => !(typeof v === 'string' && v.startsWith('blob:'))),
+  ) as Partial<T>
+
 const mergeWithDefaults = (saved?: Partial<SimpleThemeConfig>): SimpleThemeConfig => ({
-  common: { ...DEFAULT_THEME.common, ...saved?.common },
-  friends: { ...DEFAULT_THEME.friends, ...saved?.friends },
-  chatList: { ...DEFAULT_THEME.chatList, ...saved?.chatList },
-  tabBar: { ...DEFAULT_THEME.tabBar, ...saved?.tabBar },
-  chat: { ...DEFAULT_THEME.chat, ...saved?.chat },
-  input: { ...DEFAULT_THEME.input, ...saved?.input },
-  bubble: { ...DEFAULT_THEME.bubble, ...saved?.bubble },
-  passcode: { ...DEFAULT_THEME.passcode, ...saved?.passcode },
-  notification: { ...DEFAULT_THEME.notification, ...saved?.notification },
+  common: { ...DEFAULT_THEME.common, ...withoutBlobUrls(saved?.common) },
+  friends: { ...DEFAULT_THEME.friends, ...withoutBlobUrls(saved?.friends) },
+  chatList: { ...DEFAULT_THEME.chatList, ...withoutBlobUrls(saved?.chatList) },
+  tabBar: { ...DEFAULT_THEME.tabBar, ...withoutBlobUrls(saved?.tabBar) },
+  chat: { ...DEFAULT_THEME.chat, ...withoutBlobUrls(saved?.chat) },
+  input: { ...DEFAULT_THEME.input, ...withoutBlobUrls(saved?.input) },
+  bubble: { ...DEFAULT_THEME.bubble, ...withoutBlobUrls(saved?.bubble) },
+  passcode: { ...DEFAULT_THEME.passcode, ...withoutBlobUrls(saved?.passcode) },
+  notification: { ...DEFAULT_THEME.notification, ...withoutBlobUrls(saved?.notification) },
 })
 
 // 테마의 한 섹션만 부분 갱신하는 상태 업데이터 생성

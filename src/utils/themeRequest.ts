@@ -16,14 +16,22 @@ function read(theme: SimpleThemeConfig, section: Section, key: string): string {
   return (theme[section] as unknown as Record<string, string>)[key] ?? "";
 }
 
+// 아직 서버에 보내지 않은 이미지 변경분
+export interface PendingImages {
+  // typeCode -> 새로 고른 PNG 파일 (multipart part로 전송)
+  files: Record<string, File>;
+  // 연결을 제거하려는 typeCode (deleteTypeCodes로 전송)
+  removed: string[];
+}
+
 // 스토어의 테마 설정을 서버 수정 요청 형태로 변환
-// uploadedIds: 이미지 URL -> designComponentId (업로드했거나 서버에서 받은 이미지)
-// base: 서버의 현재 테마 (말풍선 인셋만 바꾼 경우 기존 이미지 ID를 쓰기 위함)
+// pending: 저장 전 이미지 변경분 (파일은 JSON이 아니라 별도 part로 보내므로 여기엔 삭제 목록만 반영)
+// base: 서버의 현재 테마 (서버에 연결된 typeCode만 삭제·inset 수정 대상으로 삼기 위함)
 export function toThemeUpdateRequest(
   theme: SimpleThemeConfig,
   themeName: string,
-  uploadedIds: Record<string, number>,
-  base?: ThemeDetailResponse,
+  pending: PendingImages,
+  base: ThemeDetailResponse,
 ): ThemeUpdateRequest {
   const styleCodes: Record<string, ThemeStyleUpdateRequest> = {};
   for (const { section, key, styleCode } of COLOR_STYLE_MAP) {
@@ -35,35 +43,42 @@ export function toThemeUpdateRequest(
   }
 
   const typeCodes: Record<string, ThemeImageUpdateRequest> = {};
-  for (const { section, key, typeCode, insetKey } of IMAGE_TYPE_MAP) {
-    const value = read(theme, section, key);
-    // 말풍선 값은 "url 가로 세로" 형태라서 첫 토큰만 URL로 사용
-    const asset = parseAsset(value);
-    const uploadedId = asset.url ? uploadedIds[asset.url] : undefined;
+  const deleteTypeCodes: string[] = [];
+  const removed = new Set(pending.removed);
 
-    if (insetKey === undefined) {
-      if (uploadedId !== undefined) typeCodes[typeCode] = { designComponentId: uploadedId };
+  for (const { section, key, typeCode, insetKey } of IMAGE_TYPE_MAP) {
+    const hasFile = typeCode in pending.files;
+    const linked = typeCode in base.typeCodes;
+
+    // 같은 typeCode의 업로드와 삭제를 동시에 보내면 400이므로, 파일이 있으면 삭제하지 않음
+    if (!hasFile && removed.has(typeCode) && linked) {
+      deleteTypeCodes.push(typeCode);
       continue;
     }
 
+    // 일반 이미지는 파일 part만으로 충분. 말풍선만 inset을 JSON으로 함께 보냄
+    if (insetKey === undefined || !(hasFile || linked)) continue;
+
     // 말풍선: 이미지를 바꾸지 않았어도 여백이 바뀌었을 수 있어서 항상 인셋을 함께 보냄
-    const designComponentId = uploadedId ?? base?.typeCodes[typeCode]?.designComponentId;
-    if (designComponentId === undefined) continue;
+    const asset = parseAsset(read(theme, section, key));
     const { top, left, bottom, right } = parseEdgeInsets(read(theme, section, insetKey));
     typeCodes[typeCode] = {
-      designComponentId,
       inset: { top, left, bottom, right, stretchX: asset.width, stretchY: asset.height },
     };
   }
 
-  return { themeName, typeCodes, styleCodes };
+  return {
+    themeName,
+    typeCodes,
+    styleCodes,
+    ...(deleteTypeCodes.length > 0 && { deleteTypeCodes }),
+  };
 }
 
-// 서버의 테마를 스토어에 반영할 값으로 변환 (이미지 URL -> designComponentId 목록도 함께 반환)
+// 서버의 테마를 스토어에 반영할 값으로 변환
 export function fromThemeDetail(detail: ThemeDetailResponse): {
   themeName: string;
   patch: ThemePatch;
-  imageIds: Record<string, number>;
 } {
   const patch: ThemePatch = {};
   const set = (section: Section, key: string, value: string) => {
@@ -76,11 +91,9 @@ export function fromThemeDetail(detail: ThemeDetailResponse): {
     if (style?.color) set(section, key, joinHexAlpha(style.color, style.alpha ?? 100));
   }
 
-  const imageIds: Record<string, number> = {};
   for (const { section, key, typeCode, insetKey } of IMAGE_TYPE_MAP) {
     const info = detail.typeCodes[typeCode];
     if (!info?.imageUrl) continue;
-    imageIds[info.imageUrl] = info.designComponentId;
 
     if (insetKey === undefined) {
       set(section, key, info.imageUrl);
@@ -95,5 +108,5 @@ export function fromThemeDetail(detail: ThemeDetailResponse): {
     // 인셋이 없으면 기존 기본값(이미지·크기·여백)을 그대로 유지
   }
 
-  return { themeName: detail.themeName, patch, imageIds };
+  return { themeName: detail.themeName, patch };
 }

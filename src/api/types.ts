@@ -118,8 +118,8 @@ export interface ThemeDetailResponse {
 }
 
 // 테마 수정 요청 (PUT /api/themes/{id}) - 바꿀 항목만 담는다
+// 이미지 파일은 JSON이 아니라 typeCode 이름의 multipart part로 전달하므로 여기서는 inset만 다룸
 export interface ThemeImageUpdateRequest {
-  designComponentId?: number
   inset?: Partial<Inset>
 }
 export interface ThemeStyleUpdateRequest {

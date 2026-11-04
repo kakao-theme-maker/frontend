@@ -6,7 +6,7 @@ import {
 } from "@/api/themes";
 import { MY_LIST_FETCH_SIZE } from "@/config/pagination";
 import { useThemeStore } from "@/store/customizeStore";
-import { useUploadedImageStore } from "@/store/uploadedImageStore";
+import { usePendingImageStore } from "@/store/pendingImageStore";
 import { sortByLatest } from "@/utils/sort";
 import { toThemeUpdateRequest } from "@/utils/themeRequest";
 import useMe from "./useMe";
@@ -86,16 +86,19 @@ export function useSaveTheme() {
         });
       }
 
+      const pending = usePendingImageStore.getState();
       const body = toThemeUpdateRequest(
         useThemeStore.getState().theme,
         themeName,
-        useUploadedImageStore.getState().ids,
+        { files: pending.files, removed: pending.removed },
         base,
       );
-      await updateTheme(id, body);
+      // 서버가 검증·저장에 실패하면 전체를 롤백하므로, 성공했을 때만 보관 중인 이미지 변경분을 비움
+      await updateTheme(id, body, pending.files);
+      usePendingImageStore.getState().clear();
       return id;
     },
-    // 저장 후 테마 목록·상세 캐시 무효화
+    // 저장 후 테마 목록·상세 캐시 무효화 (상세를 다시 받으면 blob 미리보기가 서버 이미지 URL로 교체됨)
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["themes"] }),
   });
 }
