@@ -2,8 +2,7 @@
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import type { Platform } from "@/api/types";
-import { useDownloadTheme, useSaveTheme, useTheme } from "@/hooks/useThemes";
+import { useSaveTheme, useTheme } from "@/hooks/useThemes";
 import { useThemeStore } from "@/store/customizeStore";
 import { usePendingImageStore } from "@/store/pendingImageStore";
 import { fromThemeDetail } from "@/utils/themeRequest";
@@ -28,18 +27,6 @@ function saveErrorMessage(error: unknown): string {
   return "테마 저장에 실패했어요. 다시 시도해 주세요.";
 }
 
-// 빌드·다운로드 실패 원인별 안내 문구 (빌드 시작·상태 조회는 소유자 또는 관리자만 가능)
-function downloadErrorMessage(error: unknown): string {
-  if (isAxiosError(error)) {
-    const status = error.response?.status;
-    if (status === 401) return "로그인이 필요해요. 다시 로그인해 주세요.";
-    if (status === 403) return "이 테마를 빌드할 권한이 없어요.";
-    if (status === 404) return "테마 또는 빌드 결과를 찾지 못했어요.";
-    return "다운로드에 실패했어요. 잠시 후 다시 시도해 주세요.";
-  }
-  return error instanceof Error ? error.message : "다운로드에 실패했어요.";
-}
-
 // 테마 만들기 간편모드 메인 페이지
 export default function CustomizeMain() {
   const [activeTab, setActiveTab] = useState<TabKey>("chat");
@@ -55,10 +42,8 @@ export default function CustomizeMain() {
   const applyServerTheme = useThemeStore((state) => state.applyServerTheme);
   const { data: loadedTheme } = useTheme(themeId);
   const saveTheme = useSaveTheme();
-  const downloadTheme = useDownloadTheme();
-  const [platform, setPlatform] = useState<Platform>("ANDROID");
   const [message, setMessage] = useState<string | null>(null);
-  const isBusy = saveTheme.isPending || downloadTheme.isPending;
+  const isBusy = saveTheme.isPending;
 
   // 저장된 테마를 열면 서버의 이름·색상·이미지를 에디터에 반영
   useEffect(() => {
@@ -100,17 +85,12 @@ export default function CustomizeMain() {
     if ((await save()) !== null) setMessage("임시저장했어요.");
   };
 
-  // 저장 -> 빌드 -> 다운로드 순서로 진행
+  // 저장 후 다운로드 페이지로 이동 (빌드·다운로드는 다운로드 페이지에서 진행)
   const handleDownload = async () => {
     setMessage(null);
     const savedId = await save();
     if (savedId === null) return;
-    try {
-      const url = await downloadTheme.mutateAsync({ themeId: savedId, platform });
-      window.location.assign(url);
-    } catch (error) {
-      setMessage(downloadErrorMessage(error));
-    }
+    navigate(`/themes/${savedId}/download`);
   };
 
   return (
@@ -118,22 +98,11 @@ export default function CustomizeMain() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center w-full">
         <PageTitle>새 테마 만들기 - 간편모드</PageTitle>
         <div className="sm:ml-auto flex items-center gap-2">
-          {(["ANDROID", "IOS"] as const).map((p) => (
-            <Button
-              key={p}
-              size="sm"
-              variant={platform === p ? "solid" : "outline"}
-              onClick={() => setPlatform(p)}
-              disabled={isBusy}
-            >
-              {p === "ANDROID" ? "Android" : "iOS"}
-            </Button>
-          ))}
           <Button onClick={handleSave} disabled={isBusy}>
-            {saveTheme.isPending && !downloadTheme.isPending ? "저장 중..." : "임시저장"}
+            {saveTheme.isPending ? "저장 중..." : "임시저장"}
           </Button>
           <Button onClick={handleDownload} disabled={isBusy}>
-            {downloadTheme.isPending ? "빌드 중..." : "다운로드"}
+            다운로드
           </Button>
         </div>
       </div>

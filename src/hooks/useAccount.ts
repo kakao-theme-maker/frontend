@@ -1,7 +1,7 @@
 // src/hooks/useAccount.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "@/api/auth";
+import { createGuestToken, signOut } from "@/api/auth";
 import type { UserProfileUpdateRequest } from "@/api/types";
 import { changePassword, updateUserProfile, updateUserProfileImage } from "@/api/users";
 
@@ -13,8 +13,13 @@ export function useLogout() {
   return useMutation({
     mutationFn: signOut,
     // 로그인 상태 캐시 제거 후 홈으로 이동
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.clear();
+      try {
+        await createGuestToken(); // 로그아웃 → 게스트 전환
+      } catch {
+        // 발급 실패해도 로그아웃 자체는 유지 (테마 제작 진입 시 가드가 재시도)
+      }
       navigate("/");
     },
   });

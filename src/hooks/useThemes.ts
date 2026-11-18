@@ -11,6 +11,25 @@ import { sortByLatest } from "@/utils/sort";
 import { toThemeUpdateRequest } from "@/utils/themeRequest";
 import useMe from "./useMe";
 
+// 빌드·다운로드 중 어느 단계에서 실패했는지 함께 담는 에러 (원인 API를 구분해 안내하기 위함)
+export type DownloadStep = "build" | "status" | "download";
+export class DownloadStepError extends Error {
+  readonly step: DownloadStep;
+  readonly original: unknown;
+  constructor(step: DownloadStep, original: unknown) {
+    super(`theme ${step} failed`);
+    this.step = step;
+    this.original = original;
+  }
+}
+async function inStep<T>(step: DownloadStep, task: Promise<T>): Promise<T> {
+  try {
+    return await task;
+  } catch (error) {
+    throw new DownloadStepError(step, error);
+  }
+}
+
 // 내가 만든 테마 목록(최신순) 조회 훅
 export function useMyThemes() {
   const { data: me } = useMe();
@@ -117,12 +136,12 @@ export function useSaveTheme() {
 export function useDownloadTheme() {
   return useMutation({
     mutationFn: async ({ themeId, platform }: { themeId: number; platform: Platform }) => {
-      const { buildId } = await buildTheme(themeId, platform);
+      const { buildId } = await inStep("build", buildTheme(themeId, platform));
 
       for (let i = 0; i < BUILD_POLL_MAX; i++) {
-        const build = await getThemeBuild(buildId);
+        const build = await inStep("status", getThemeBuild(buildId));
         if (build.status === "SUCCESS") {
-          const { downloadUrl } = await getThemeDownload(themeId, platform);
+          const { downloadUrl } = await inStep("download", getThemeDownload(themeId, platform));
           if (!downloadUrl) throw new Error("다운로드 주소를 받지 못했어요. 다시 시도해 주세요.");
           return downloadUrl;
         }

@@ -23,7 +23,7 @@ api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
     const original = error.config as RetryConfig | undefined
-    const isAuthCall = original?.url?.includes('/api/auth/')
+    const isAuthCall = original?.url?.includes('/api/auth/') || original?.url?.includes('/api/guest-tokens')
 
     if (error.response?.status === 401 && original && !original._retry && !isAuthCall) {
       original._retry = true

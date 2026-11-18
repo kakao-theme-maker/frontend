@@ -1,6 +1,6 @@
 // src/pages/community/Write.tsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import defaultIcon from "@/assets/images/commonIcoTheme.png";
 import Button from "@/components/common/Button";
 import Card from "@/components/common/Card";
@@ -35,7 +35,12 @@ export default function Write() {
   const navigate = useNavigate();
   const [sort, setSort] = useState<(typeof THEME_SORT_OPTIONS)[number]>(THEME_SORT_OPTIONS[0]);
   const [keyword, setKeyword] = useState("");
-  const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
+  // 다운로드 완료 화면에서 넘어오면 해당 테마를 미리 선택 (?themeId=)
+  const [searchParams] = useSearchParams();
+  const presetThemeId = Number(searchParams.get("themeId"));
+  const [selectedThemeId, setSelectedThemeId] = useState<number | null>(
+    Number.isInteger(presetThemeId) && presetThemeId > 0 ? presetThemeId : null,
+  );
   const [page, setPage] = useState(1);
   const [postInfo, setPostInfo] = useState<PostInfoValues>(INITIAL_POST_INFO);
 

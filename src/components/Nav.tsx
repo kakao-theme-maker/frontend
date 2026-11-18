@@ -21,11 +21,11 @@ const NAV_ITEMS: readonly NavItem[] = [
   { label: "마이페이지", path: "/mypage" },
 ];
 
-// 비로그인일 때 보이는 메뉴 (홈화면, 커뮤니티)
-const GUEST_NAV_ITEMS = NAV_ITEMS.slice(0, 2);
+// 비로그인일 때 보이는 메뉴 (홈화면, 커뮤니티, 테마만들기 - 테마 제작은 게스트도 가능)
+const GUEST_NAV_ITEMS = NAV_ITEMS.slice(0, 3);
 
 // 상단 네비게이션 바 컴포넌트
-// - 비로그인: 홈화면/커뮤니티 + 로그인 링크
+// - 비로그인: 홈화면/커뮤니티/테마만들기 + 로그인 링크
 // - 로그인: 데스크톱(md 이상)은 가로 메뉴, 모바일은 햄버거 메뉴(드롭다운)
 export default function Nav() {
   const { data: me, isLoading } = useMe();
@@ -48,7 +48,7 @@ export default function Nav() {
           </Link>
         </div>
 
-        {/* 가로 메뉴: 로그인 상태에선 md 이상에서만, 비로그인(2개)은 항상 표시 */}
+        {/* 가로 메뉴: 로그인 상태에선 md 이상에서만, 비로그인(3개)은 항상 표시 */}
         <div className={`${me ? "hidden md:flex" : "flex"} flex-1 justify-center md:flex-none`}>
           <div className="flex items-center gap-2 lg:gap-4">
             {items.map((item) => (
